@@ -73,9 +73,9 @@ const PokemonEditor: FC<Props> = ({ member, onSave, onCancel }) => {
 
   return (
     <div className="h-full bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
         {/* Preview Area */}
-        <div className="flex justify-center mb-6 h-48 bg-black/20 rounded-xl relative overflow-hidden border border-white/5">
+        <div className="flex justify-center mb-6 h-64 bg-black/20 rounded-xl relative overflow-hidden border border-white/5">
           {loading ? (
             <div className="self-center animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
           ) : error ? (

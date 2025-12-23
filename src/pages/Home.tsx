@@ -11,11 +11,11 @@ const Home = () => {
       <header className="pt-20 pb-12 text-center relative z-10 px-4">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-indigo-900/40 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="flex items-center justify-center gap-4 mb-6">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
           <img
             src={logo}
             alt="Hall of Fame Logo"
-            className="w-16 h-16 md:w-24 md:h-24 object-contain drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]"
+            className="w-32 h-32 object-contain drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]"
           />
           <h1 className="relative text-6xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-600 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]">
             HALL OF FAME
