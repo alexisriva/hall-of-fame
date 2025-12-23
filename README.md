@@ -1,2 +1,3 @@
-# hall-of-fame
+# Hall of Fame
+
 Add your favorite pkmn teams to your hall of fame.
