@@ -19,6 +19,6 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-image: radial-gradient(circle at 50% 10%, #2e1065 0%, #000000 60%);
+  background-image: radial-gradient(circle at 50% 0%, #172554 0%, #020617 80%);
   background-attachment: fixed;
 }

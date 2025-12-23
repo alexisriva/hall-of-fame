@@ -21,7 +21,7 @@ const AdminTeamCard: FC<Props> = ({ member, onClick, isSelected }) => {
       className={`relative cursor-pointer p-4 rounded-xl border transition-all duration-200 flex items-center space-x-4
         ${
           isSelected
-            ? "bg-purple-900/30 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+            ? "bg-amber-900/30 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
             : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
         }`}
     >
@@ -41,7 +41,7 @@ const AdminTeamCard: FC<Props> = ({ member, onClick, isSelected }) => {
         <p className="text-xs text-gray-400">{member.role}</p>
       </div>
       {isSelected && (
-        <div className="absolute right-4 w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_10px_rgba(192,132,252,0.8)]" />
+        <div className="absolute right-4 w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.8)]" />
       )}
     </div>
   );

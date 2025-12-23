@@ -72,12 +72,12 @@ const PokemonEditor: FC<Props> = ({ member, onSave, onCancel }) => {
     : null;
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+    <div className="h-full bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Preview Area */}
         <div className="flex justify-center mb-6 h-48 bg-black/20 rounded-xl relative overflow-hidden border border-white/5">
           {loading ? (
-            <div className="self-center animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-fuchsia-500"></div>
+            <div className="self-center animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
           ) : error ? (
             <div className="self-center text-red-400 text-sm font-medium">
               {error}
@@ -108,7 +108,7 @@ const PokemonEditor: FC<Props> = ({ member, onSave, onCancel }) => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white outline-none transition-all"
+            className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white outline-none transition-all"
             placeholder="e.g. charizard"
           />
         </div>
@@ -121,7 +121,7 @@ const PokemonEditor: FC<Props> = ({ member, onSave, onCancel }) => {
             type="text"
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white outline-none transition-all"
+            className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white outline-none transition-all"
             placeholder="e.g. The Sweeper"
           />
         </div>
@@ -132,7 +132,7 @@ const PokemonEditor: FC<Props> = ({ member, onSave, onCancel }) => {
             id="shiny-toggle"
             checked={isShiny}
             onChange={(e) => setIsShiny(e.target.checked)}
-            className="w-5 h-5 rounded border-gray-600 text-purple-600 focus:ring-purple-500 bg-gray-700"
+            className="w-5 h-5 rounded border-gray-600 text-amber-600 focus:ring-amber-500 bg-gray-700"
           />
           <label
             htmlFor="shiny-toggle"
@@ -153,7 +153,7 @@ const PokemonEditor: FC<Props> = ({ member, onSave, onCancel }) => {
           <button
             type="submit"
             disabled={!!error || loading || !previewData}
-            className="flex-1 px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+            className="flex-1 px-4 py-2 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-white font-bold rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
           >
             Save Changes
           </button>

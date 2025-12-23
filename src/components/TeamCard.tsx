@@ -56,7 +56,7 @@ const TeamCard: FC<Props> = ({ member }) => {
       data.sprites.front_default;
 
   return (
-    <div className="relative group overflow-hidden bg-white/10 backdrop-blur-md rounded-xl border border-white/20 hover:border-white/40 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-500/20">
+    <div className="relative group overflow-hidden bg-white/10 backdrop-blur-md rounded-xl border border-white/20 hover:border-white/40 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/20">
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
 
       <div className="p-6 relative z-10 flex flex-col items-center h-full">
@@ -76,7 +76,9 @@ const TeamCard: FC<Props> = ({ member }) => {
         <h3 className="text-3xl font-bold text-white capitalize mb-1 tracking-tight">
           {name}
         </h3>
-        <p className="text-sm text-blue-200 font-medium italic mb-4">{role}</p>
+        <p className="text-sm text-yellow-100 font-medium italic mb-4">
+          {role}
+        </p>
 
         <div className="flex gap-2 mb-6">
           {data.types.map((t) => (

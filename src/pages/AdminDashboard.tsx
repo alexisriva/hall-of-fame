@@ -68,7 +68,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-12 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-md">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-yellow-400">
             Admin Dashboard
           </h1>
           <p className="text-gray-400 mt-1 text-sm">
@@ -94,7 +94,7 @@ const AdminDashboard = () => {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fuchsia-500" />
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500" />
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -134,12 +134,12 @@ const AdminDashboard = () => {
           </div>
 
           {/* Right Column: Editor */}
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-7 flex flex-col">
             <h2 className="text-lg font-semibold text-gray-300 mb-4 px-1 opacity-0 md:opacity-100">
               Editor
             </h2>
             {selectedIndex !== null && team[selectedIndex] ? (
-              <div className="lg:sticky lg:top-8 animate-fade-in-up">
+              <div className="flex-1 animate-fade-in-up h-full">
                 <PokemonEditor
                   member={team[selectedIndex]}
                   onSave={handleSaveMember}
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
                 />
               </div>
             ) : (
-              <div className="h-full flex flex-col items-center justify-center p-12 border border-white/5 rounded-2xl bg-white/[0.02] text-center min-h-[400px]">
+              <div className="flex-1 flex flex-col items-center justify-center p-12 border border-white/5 rounded-2xl bg-white/[0.02] text-center min-h-[400px]">
                 <div className="p-4 bg-white/5 rounded-full mb-4">
                   <svg
                     className="w-8 h-8 text-gray-500"

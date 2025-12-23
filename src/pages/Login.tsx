@@ -49,7 +49,7 @@ const Login = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent text-white placeholder-gray-500 outline-none transition-all"
+              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white placeholder-gray-500 outline-none transition-all"
               placeholder="admin@halloffame.com"
             />
           </div>
@@ -62,14 +62,14 @@ const Login = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent text-white placeholder-gray-500 outline-none transition-all"
+              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white placeholder-gray-500 outline-none transition-all"
               placeholder="••••••••"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold rounded-lg shadow-lg hover:shadow-purple-500/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full py-3 px-4 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-white font-bold rounded-lg shadow-lg hover:shadow-amber-500/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {loading ? "Verifying..." : "Enter Hall"}
           </button>
