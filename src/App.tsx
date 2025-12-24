@@ -1,27 +1,22 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AuthProvider from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import AdminDashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
+import BuildManager from "./pages/BuildManager";
 
-const App = () => (
-  <AuthProvider>
+function App() {
+  return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+      <div className="min-h-screen bg-[#1a1a1a] text-white">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/builds/:id" element={<BuildManager />} />
+          <Route
+            path="*"
+            element={<div className="p-10 text-center">404 Not Found</div>}
+          />
+        </Routes>
+      </div>
     </Router>
-  </AuthProvider>
-);
+  );
+}
 
 export default App;

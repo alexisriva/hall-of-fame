@@ -17,9 +17,6 @@ const Header: FC = () => {
           HALL OF FAME
         </h1>
       </div>
-      <p className="relative text-lg md:text-xl text-blue-200/80 font-light tracking-wide max-w-2xl mx-auto mb-4">
-        A showcase of the elite champions.
-      </p>
 
       {/* Admin Link (Subtle) */}
       <Link

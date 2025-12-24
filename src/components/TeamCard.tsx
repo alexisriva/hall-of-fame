@@ -2,7 +2,8 @@ import type { FC } from "react";
 import { usePokemonData } from "../hooks/usePokemonData";
 
 interface Props {
-  member: FirestoreTeamMember;
+  data: Pokemon;
+  onClick: () => void;
 }
 
 const typeColors: Record<string, string> = {
@@ -26,9 +27,17 @@ const typeColors: Record<string, string> = {
   fairy: "bg-pink-300",
 };
 
-const TeamCard: FC<Props> = ({ member }) => {
-  const { name, role, isShiny } = member;
-  const { data, isLoading, error } = usePokemonData(name);
+const TeamCard: FC<Props> = ({ data: pokemon, onClick }) => {
+  const { species, activeBuildId, savedBuilds } = pokemon;
+
+  // Find the equipped build if it exists
+  const equippedBuild = savedBuilds.find((b) => b.id === activeBuildId);
+
+  // Use equipped build details or defaults (for display only)
+  const displayName = equippedBuild?.name || species;
+  const isShiny = equippedBuild?.isShiny || false;
+
+  const { data, isLoading, error } = usePokemonData(species);
 
   if (isLoading) {
     return (
@@ -44,7 +53,7 @@ const TeamCard: FC<Props> = ({ member }) => {
     return (
       <div className="bg-white/5 rounded-xl border border-red-500/30 p-6 h-[400px] flex flex-col items-center justify-center text-center">
         <p className="text-red-400 font-semibold mb-2">Oops!</p>
-        <p className="text-sm text-gray-400">Failed to load {name}</p>
+        <p className="text-sm text-gray-400">Failed to load {species}</p>
       </div>
     );
   }
@@ -56,14 +65,17 @@ const TeamCard: FC<Props> = ({ member }) => {
       data.sprites.front_default;
 
   return (
-    <div className="relative group overflow-hidden bg-white/10 backdrop-blur-md rounded-xl border border-white/20 hover:border-white/40 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/20">
+    <div
+      onClick={onClick}
+      className="relative group cursor-pointer overflow-hidden bg-white/10 backdrop-blur-md rounded-xl border border-white/20 hover:border-white/40 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/20"
+    >
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
 
       <div className="p-6 relative z-10 flex flex-col items-center h-full">
         <div className="relative w-40 h-40 mb-2 transition-transform duration-500 group-hover:scale-110">
           <img
             src={spriteUrl}
-            alt={name}
+            alt={species}
             className="w-full h-full object-contain filter drop-shadow-xl"
           />
           {isShiny && (
@@ -74,10 +86,10 @@ const TeamCard: FC<Props> = ({ member }) => {
         </div>
 
         <h3 className="text-3xl font-bold text-white capitalize mb-1 tracking-tight">
-          {name}
+          {displayName}
         </h3>
         <p className="text-sm text-yellow-100 font-medium italic mb-4">
-          {role}
+          {species}
         </p>
 
         <div className="flex gap-2 mb-6">
