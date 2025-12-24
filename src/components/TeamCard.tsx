@@ -60,7 +60,7 @@ const TeamCard: FC<Props> = ({ member }) => {
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
 
       <div className="p-6 relative z-10 flex flex-col items-center h-full">
-        <div className="relative w-48 h-48 mb-2 transition-transform duration-500 group-hover:scale-110">
+        <div className="relative w-40 h-40 mb-2 transition-transform duration-500 group-hover:scale-110">
           <img
             src={spriteUrl}
             alt={name}
@@ -93,7 +93,7 @@ const TeamCard: FC<Props> = ({ member }) => {
           ))}
         </div>
 
-        <div className="w-full mt-auto bg-black/20 rounded-lg p-4 grid grid-cols-6 gap-0.5 text-center divide-x divide-white/5">
+        <div className="w-full mt-auto bg-black/20 rounded-lg p-3 grid grid-cols-3 gap-y-3 gap-x-1 text-center">
           {[
             {
               label: "HP",
