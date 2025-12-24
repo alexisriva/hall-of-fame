@@ -45,6 +45,7 @@ interface GameStore {
   updatePokemon: (id: string, updates: Partial<Pokemon>) => void;
   saveBuild: (pokemonId: string, build: PokemonBuild) => void;
   deleteBuild: (pokemonId: string, buildId: string) => void;
+  deletePokemon: (id: string) => void;
   toggleActiveBuildId: (pokemonId: string, buildId: string) => void;
   movePokemon: (id: string, to: "party" | "pc") => void;
 }
@@ -129,6 +130,15 @@ export const useGameStore = create<GameStore>()(
         set((state) => ({
           party: state.party.map(updateFn),
           pc: state.pc.map(updateFn),
+        }));
+      },
+
+      deletePokemon: (id) => {
+        set((state) => ({
+          party: state.party.filter((p) => p.id !== id),
+          pc: state.pc.filter((p) => p.id !== id),
+          selectedPokemonId:
+            state.selectedPokemonId === id ? null : state.selectedPokemonId,
         }));
       },
 

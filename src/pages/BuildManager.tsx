@@ -467,7 +467,7 @@ const BuildManager: FC = () => {
                           deleteBuild(pokemon.id, build.id);
                         }
                       }}
-                      className="absolute bottom-2 right-2 p-1.5 rounded-full hover:bg-red-500/20 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      className="absolute bottom-2 right-2 p-1.5 rounded-full hover:bg-black/60 text-gray-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
