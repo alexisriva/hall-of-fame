@@ -23,6 +23,17 @@ type PokemonApiData = {
       name: string;
     };
   }[];
+  abilities: {
+    ability: {
+      name: string;
+    };
+    is_hidden: boolean;
+  }[];
+  moves: {
+    move: {
+      name: string;
+    };
+  }[];
 };
 
 // -- Local Game Types --

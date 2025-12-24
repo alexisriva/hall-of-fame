@@ -34,7 +34,80 @@ export const natures: Nature[] = [
   "Timid",
 ];
 
+const capitalize = (s: string) =>
+  s
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+interface MoveInputProps {
+  value: string;
+  onChange: (val: string) => void;
+  availableMoves: string[];
+  placeholder?: string;
+}
+
+const MoveAutocomplete: FC<MoveInputProps> = ({
+  value,
+  onChange,
+  availableMoves,
+  placeholder,
+}) => {
+  const [show, setShow] = useState(false);
+  const [query, setQuery] = useState(value);
+
+  // Sync internal query if value changes externally (e.g. loading a build)
+  if (value !== query && !show) {
+    setQuery(value);
+  }
+
+  const filtered =
+    query === ""
+      ? []
+      : availableMoves
+          .filter((m) => m.toLowerCase().includes(query.toLowerCase()))
+          .slice(0, 10); // Limit to top 10
+
+  return (
+    <div className="relative">
+      <input
+        value={query} // controlled mainly by local query while typing
+        onChange={(e) => {
+          setQuery(capitalize(e.target.value.replace(/-/g, " ")));
+          onChange(capitalize(e.target.value.replace(/-/g, " ")));
+          setShow(true);
+        }}
+        onFocus={() => setShow(true)}
+        onBlur={() => setTimeout(() => setShow(false), 200)} // Delay to allow click
+        className="w-full bg-black/20 border border-white/10 rounded px-3 py-2 focus:ring-1 focus:ring-amber-500 outline-none"
+        placeholder={placeholder}
+      />
+      {show && filtered.length > 0 && (
+        <div className="absolute z-50 w-full bg-stone-900 border border-white/10 rounded-b-lg shadow-xl max-h-60 overflow-y-auto mt-1">
+          {filtered.map((move) => (
+            <div
+              key={move}
+              onMouseDown={(e) => {
+                e.preventDefault(); // Prevent blur before click fires
+                setQuery(capitalize(move.replace(/-/g, " ")));
+                onChange(capitalize(move.replace(/-/g, " ")));
+                setShow(false);
+              }}
+              className="px-3 py-2 hover:bg-white/10 cursor-pointer text-sm"
+            >
+              {capitalize(move.replace(/-/g, " "))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const BuildManager: FC = () => {
+  // ... (existing hooks)
+
+  // Re-declare to ensure scope (hooks are fine, just placement of helper)
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -55,10 +128,7 @@ const BuildManager: FC = () => {
     pokemon ? createEmptyBuild(pokemon.species) : null
   );
 
-  // Keep local state for active build to avoid laggy zustand updates on every slider move
-  // We will sync back to store on blur or dedicated save interaction if needed
-  // For now, let's sync directly but maybe debounce? Or just simple onChange.
-  // Actually, straight zustand update is fine for this scale.
+  // ... (removed redundant logs)
 
   if (!pokemon || !localBuild)
     return <div className="text-white p-10">Pokemon not found</div>;
@@ -68,44 +138,30 @@ const BuildManager: FC = () => {
     val: number,
     type: "evs" | "ivs"
   ) => {
+    // ... (logic remains same, just ensuring we render correctly below)
     let newVal = val;
-
     if (type === "evs") {
-      // 1. Snap to valid increments: 0, 4, 12, 20, 28... (4 + 8n)
-      if (newVal <= 2) {
-        newVal = 0;
-      } else {
-        // Calculate steps of 8 starting from 4
-        // Formula: 4 + 8n
+      if (newVal <= 2) newVal = 0;
+      else {
         const steps = Math.round((newVal - 4) / 8);
         newVal = 4 + steps * 8;
-
-        // Clamp basic range
         if (newVal < 0) newVal = 0;
         if (newVal > 252) newVal = 252;
       }
 
-      // 2. enforce 508 Limit
-      // Calculate current total excluding the stat being modified
       const currentTotal = statLabels.reduce((acc, label) => {
         if (label === stat) return acc;
-        return acc + localBuild.evs[label]; // Use localBuild
+        return acc + localBuild.evs[label];
       }, 0);
-
       const remainingBuffer = 508 - currentTotal;
-
-      // If our new value exceeds remaining budget, clamp it down
       if (newVal > remainingBuffer) {
-        // Find largest valid EV <= remainingBuffer
-        if (remainingBuffer < 4) {
-          newVal = 0;
-        } else {
+        if (remainingBuffer < 4) newVal = 0;
+        else {
           const maxSteps = Math.floor((remainingBuffer - 4) / 8);
           newVal = 4 + maxSteps * 8;
         }
       }
     } else {
-      // IVs just clamp 0-31
       if (newVal < 0) newVal = 0;
       if (newVal > 31) newVal = 31;
     }
@@ -113,7 +169,6 @@ const BuildManager: FC = () => {
     setLocalBuild((prev) =>
       prev
         ? {
-            // Update localBuild
             ...prev,
             [type]: {
               ...prev[type],
@@ -125,16 +180,13 @@ const BuildManager: FC = () => {
   };
 
   const handleMoveChange = (index: number, val: string) => {
-    const newMoves = [...localBuild.moves] as [string, string, string, string]; // Use localBuild
+    const newMoves = [...localBuild.moves] as [string, string, string, string];
     newMoves[index] = val;
-    setLocalBuild((prev) => (prev ? { ...prev, moves: newMoves } : prev)); // Update localBuild
+    setLocalBuild((prev) => (prev ? { ...prev, moves: newMoves } : prev));
   };
 
   const handleSave = () => {
     if (!localBuild) return;
-
-    // Save full build object to store
-    // Store handles Logic for New vs Update based on ID
     saveBuild(pokemon.id, localBuild);
   };
 
@@ -147,6 +199,7 @@ const BuildManager: FC = () => {
   return (
     <div className="min-h-screen text-white p-4 max-w-7xl mx-auto">
       <div className="mb-6 flex items-center gap-4">
+        {/* ... (Header) */}
         <button
           onClick={() => navigate("/")}
           className="text-gray-400 hover:text-white"
@@ -160,6 +213,7 @@ const BuildManager: FC = () => {
         {/* Left Col: Editor */}
         <div className="lg:col-span-8 bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
           <div className="flex items-center gap-6 mb-8 border-b border-white/10 pb-6">
+            {/* ... (Sprite and Name input) */}
             <img
               src={spriteUrl}
               alt={pokemon.species}
@@ -199,7 +253,7 @@ const BuildManager: FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* General Info */}
-            <div className="flex flex-col justify-between">
+            <div className="flex flex-col justify-between space-y-4 md:space-y-0">
               <div>
                 <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1">
                   Held Item
@@ -215,21 +269,37 @@ const BuildManager: FC = () => {
                   placeholder="e.g. Leftovers"
                 />
               </div>
+
+              {/* ABILITY SELECTOR */}
               <div>
                 <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1">
                   Ability
                 </label>
-                <input
+                <select
                   value={localBuild.ability}
                   onChange={(e) =>
                     setLocalBuild((prev) =>
                       prev ? { ...prev, ability: e.target.value } : prev
                     )
                   }
-                  className="w-full bg-black/20 border border-white/10 rounded px-3 py-2 focus:ring-1 focus:ring-amber-500 outline-none"
-                  placeholder="e.g. Levitate"
-                />
+                  className="w-full bg-black/20 border border-white/10 rounded px-3 py-2 focus:ring-1 focus:ring-amber-500 outline-none text-white appearance-none cursor-pointer"
+                >
+                  <option value="" disabled>
+                    Select Ability
+                  </option>
+                  {data?.abilities.map((a) => (
+                    <option
+                      key={a.ability.name}
+                      value={a.ability.name}
+                      className="bg-[#1a1a1a]"
+                    >
+                      {capitalize(a.ability.name.replace("-", " "))}{" "}
+                      {a.is_hidden && "(Hidden)"}
+                    </option>
+                  ))}
+                </select>
               </div>
+
               <div>
                 <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1">
                   Nature
@@ -265,11 +335,11 @@ const BuildManager: FC = () => {
               </label>
               <div className="space-y-2">
                 {localBuild.moves.map((move, i) => (
-                  <input
+                  <MoveAutocomplete
                     key={i}
                     value={move}
-                    onChange={(e) => handleMoveChange(i, e.target.value)}
-                    className="w-full bg-black/20 border border-white/10 rounded px-3 py-2 focus:ring-1 focus:ring-amber-500 outline-none"
+                    onChange={(val) => handleMoveChange(i, val)}
+                    availableMoves={data?.moves.map((m) => m.move.name) || []}
                     placeholder={`Move ${i + 1}`}
                   />
                 ))}
