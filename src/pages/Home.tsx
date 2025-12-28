@@ -24,7 +24,7 @@ const Home: FC = () => {
         <section>
           <div className="max-w-[1600px] mx-auto px-4 mb-4 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-amber-400">
-              Current Party ({party.length}/6)
+              Current Party ({party.filter(Boolean).length}/6)
             </h2>
             <button
               onClick={() => setIsAdding(true)}
@@ -51,9 +51,9 @@ const Home: FC = () => {
         {/* Section B: PC */}
         <section className="max-w-[1600px] mx-auto px-4">
           <h2 className="text-xl font-bold text-gray-400 mb-4">
-            PC Box ({pc.length}/10)
+            PC Box ({pc.filter(Boolean).length}/10)
           </h2>
-          <PcGrid members={pc} limit={10} />
+          <PcGrid members={pc} />
         </section>
       </main>
 

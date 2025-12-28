@@ -34,10 +34,16 @@ const createPokemon = (species: string): Pokemon => ({
   savedBuilds: [],
 });
 
+interface SwapSelection {
+  loc: "party" | "pc";
+  index: number;
+}
+
 interface GameStore {
-  party: Pokemon[];
-  pc: Pokemon[];
+  party: (Pokemon | null)[];
+  pc: (Pokemon | null)[];
   selectedPokemonId: string | null;
+  swapSelection: SwapSelection | null;
 
   // Actions
   addPokemon: (species?: string) => void;
@@ -47,43 +53,108 @@ interface GameStore {
   deleteBuild: (pokemonId: string, buildId: string) => void;
   deletePokemon: (id: string) => void;
   toggleActiveBuildId: (pokemonId: string, buildId: string) => void;
-  movePokemon: (id: string, to: "party" | "pc") => void;
+
+  // Swap Actions
+  setSwapSelection: (selection: SwapSelection | null) => void;
+  movePokemon: (
+    fromLoc: "party" | "pc",
+    fromIdx: number,
+    toLoc: "party" | "pc",
+    toIdx: number
+  ) => void;
 }
 
 export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
-      party: [],
-      pc: [],
+      party: Array(6).fill(null),
+      pc: Array(10).fill(null),
       selectedPokemonId: null,
+      swapSelection: null,
 
       addPokemon: (species = "ditto") => {
         const newMon = createPokemon(species);
         const { party, pc } = get();
 
-        if (party.length < 6) {
-          set({ party: [...party, newMon] });
-        } else if (pc.length < 10) {
-          set({ pc: [...pc, newMon] });
-        } else {
-          alert("PC is full!");
+        // 1. Try Party
+        const emptyPartyIdx = party.findIndex((p) => p === null);
+        if (emptyPartyIdx !== -1) {
+          const newParty = [...party];
+          newParty[emptyPartyIdx] = newMon;
+          set({ party: newParty });
+          return;
         }
+
+        // 2. Try PC
+        const emptyPcIdx = pc.findIndex((p) => p === null);
+        if (emptyPcIdx !== -1) {
+          const newPc = [...pc];
+          newPc[emptyPcIdx] = newMon;
+          set({ pc: newPc });
+          return;
+        }
+
+        alert("Storage is full! Release a Pokemon to catch more.");
       },
 
       selectPokemon: (id) => set({ selectedPokemonId: id }),
 
+      setSwapSelection: (selection) => set({ swapSelection: selection }),
+
+      movePokemon: (fromLoc, fromIdx, toLoc, toIdx) => {
+        const state = get();
+        const sourceList =
+          fromLoc === "party" ? [...state.party] : [...state.pc];
+        const targetList = toLoc === "party" ? [...state.party] : [...state.pc];
+
+        // If defined in same list (and it's the same list instance), be careful
+        // Actually, let's keep it simple:
+        // 1. Get the items
+        const itemA = sourceList[fromIdx];
+
+        // If lists are different, we can just mutate clones and set.
+        // If lists are same (e.g. party to party), we need to ensure we are working on the same cloned array.
+
+        if (fromLoc === toLoc) {
+          // SWAP INTERNAL
+          const list = sourceList; // already cloned above
+          const itemB = list[toIdx];
+
+          list[fromIdx] = itemB;
+          list[toIdx] = itemA;
+
+          set({ [fromLoc]: list });
+        } else {
+          // SWAP ACROSS LISTS
+          // sourceList is clone of A, targetList is clone of B
+          const itemB = targetList[toIdx];
+
+          sourceList[fromIdx] = itemB;
+          targetList[toIdx] = itemA;
+
+          set({
+            [fromLoc]: sourceList,
+            [toLoc]: targetList,
+          });
+        }
+
+        // Clear selection after move
+        set({ swapSelection: null });
+      },
+
       updatePokemon: (id, updates) => {
+        const updateList = (list: (Pokemon | null)[]) =>
+          list.map((p) => (p && p.id === id ? { ...p, ...updates } : p));
+
         set((state) => ({
-          party: state.party.map((p) =>
-            p.id === id ? { ...p, ...updates } : p
-          ),
-          pc: state.pc.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+          party: updateList(state.party),
+          pc: updateList(state.pc),
         }));
       },
 
       saveBuild: (pokemonId, build) => {
-        const updateFn = (p: Pokemon) => {
-          if (p.id !== pokemonId) return p;
+        const updateFn = (p: Pokemon | null) => {
+          if (!p || p.id !== pokemonId) return p;
 
           // Check if updating existing
           const existingIndex = p.savedBuilds.findIndex(
@@ -111,6 +182,7 @@ export const useGameStore = create<GameStore>()(
             savedBuilds: [...p.savedBuilds, build],
           };
         };
+
         set((state) => ({
           party: state.party.map(updateFn),
           pc: state.pc.map(updateFn),
@@ -118,8 +190,8 @@ export const useGameStore = create<GameStore>()(
       },
 
       deleteBuild: (pokemonId, buildId) => {
-        const updateFn = (p: Pokemon) => {
-          if (p.id !== pokemonId) return p;
+        const updateFn = (p: Pokemon | null) => {
+          if (!p || p.id !== pokemonId) return p;
           return {
             ...p,
             // If deleting the currently equipped build, unequip it
@@ -134,17 +206,19 @@ export const useGameStore = create<GameStore>()(
       },
 
       deletePokemon: (id) => {
+        const removeFn = (p: Pokemon | null) => (p && p.id === id ? null : p);
+
         set((state) => ({
-          party: state.party.filter((p) => p.id !== id),
-          pc: state.pc.filter((p) => p.id !== id),
+          party: state.party.map(removeFn),
+          pc: state.pc.map(removeFn),
           selectedPokemonId:
             state.selectedPokemonId === id ? null : state.selectedPokemonId,
         }));
       },
 
       toggleActiveBuildId: (pokemonId, buildId) => {
-        const updateFn = (p: Pokemon) => {
-          if (p.id !== pokemonId) return p;
+        const updateFn = (p: Pokemon | null) => {
+          if (!p || p.id !== pokemonId) return p;
           return {
             ...p,
             activeBuildId: p.activeBuildId === buildId ? null : buildId,
@@ -154,13 +228,6 @@ export const useGameStore = create<GameStore>()(
           party: state.party.map(updateFn),
           pc: state.pc.map(updateFn),
         }));
-      },
-
-      movePokemon: (id, to) => {
-        // This is a bit complex, strictly implementation based on requirements not fully detailed
-        // For now, simpler implementation: just used for adding.
-        // If needed later, we can implement drag and drop logic here.
-        console.log("Move not implemented yet", id, to);
       },
     }),
     {

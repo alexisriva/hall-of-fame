@@ -1,22 +1,22 @@
 import type { FC } from "react";
 import { usePokemonData } from "../hooks/usePokemonData";
-import { useGameStore } from "../store/gameStore";
-import { useNavigate } from "react-router-dom";
 
 interface Props {
   member: Pokemon;
+  onClick: () => void;
+  onMove?: () => void;
+  isSwapMode?: boolean;
 }
 
-const PcCard: FC<Props> = ({ member }) => {
-  const { species, isShiny, id } = member;
-  const { data, isLoading } = usePokemonData(species);
-  const selectPokemon = useGameStore((state) => state.selectPokemon);
-  const navigate = useNavigate();
+const PcCard: FC<Props> = ({ member, onClick, onMove, isSwapMode }) => {
+  const { species, activeBuildId, savedBuilds } = member;
 
-  const handleClick = () => {
-    selectPokemon(id);
-    navigate(`/builds/${id}`);
-  };
+  // Logic to determine display styling (shiny etc) needs to be consistent
+  // Use equipped build if exists
+  const equippedBuild = savedBuilds.find((b) => b.id === activeBuildId);
+  const isShiny = equippedBuild?.isShiny || false;
+
+  const { data, isLoading } = usePokemonData(species);
 
   const spriteUrl = isShiny
     ? data?.sprites.front_shiny
@@ -24,8 +24,13 @@ const PcCard: FC<Props> = ({ member }) => {
 
   return (
     <div
-      onClick={handleClick}
-      className="relative w-20 h-20 bg-white/5 rounded-lg border border-white/10 hover:border-amber-500/50 hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center group"
+      onClick={onClick}
+      className={`relative w-20 h-20 rounded-lg border transition-all cursor-pointer flex items-center justify-center group overflow-hidden
+      ${
+        isSwapMode
+          ? "animate-pulse ring-2 ring-amber-500 bg-amber-500/10 border-amber-500"
+          : "bg-white/5 border-white/10 hover:border-amber-500/50 hover:bg-white/10"
+      }`}
     >
       {isLoading ? (
         <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
@@ -38,6 +43,19 @@ const PcCard: FC<Props> = ({ member }) => {
           />
           {isShiny && (
             <span className="absolute top-1 right-1 text-xs">✨</span>
+          )}
+
+          {/* Move Button Overlay */}
+          {!isSwapMode && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onMove?.();
+              }}
+              className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity z-10 text-xs font-bold text-amber-500 uppercase tracking-widest"
+            >
+              MOVE
+            </button>
           )}
         </>
       )}

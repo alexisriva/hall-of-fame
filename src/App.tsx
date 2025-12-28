@@ -5,7 +5,7 @@ import BuildManager from "./pages/BuildManager";
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[#1a1a1a] text-white">
+      <div className="min-h-screen text-white">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/builds/:id" element={<BuildManager />} />
