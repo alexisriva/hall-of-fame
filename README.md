@@ -83,6 +83,10 @@ src/
 To access the admin panel, navigate to `/admin`.
 _Note: You must set up an authenticated user in your Firebase Console to log in._
 
+## 🙏 Credits
+
+- Icons: [Pokemon Type Icons](https://github.com/partywhale/pokemon-type-icons/) by [partywhale](https://github.com/partywhale)
+
 ---
 
 _Gotta catch 'em all!_ 🔴⚪
