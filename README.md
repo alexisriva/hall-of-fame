@@ -6,12 +6,12 @@ A premium, interactive portfolio component for showcasing your elite Pokémon te
 
 ## ✨ Features
 
-- **Public Showcase**: A stunning, glassmorphic display of your current "Hall of Fame" team.
-- **Admin Dashboard**: A protected interface to manage your team roster.
-- **Live Preview Editor**: Real-time sprite preview as you type Pokémon names.
+- **Local Team Hub**: A stunning, glassmorphic display of your current "Hall of Fame" team.
+- **Battle Build Library**: Create and save multiple competitive builds (EVs, IVs, Natures) for each team member.
+- **Live Preview Editor**: Real-time sprite preview as you draft your team.
 - **Rich Data**: Displays type, sprites, and base stats (HP, ATK, DEF, SPA, SPD, SPE).
 - **Optimized Performance**: Uses **TanStack Query** for aggressive caching of API data.
-- **Real-time Sync**: **Firebase Firestore** integration ensures updates are pushed instantly to all viewers.
+- **Persistence**: **Zustand** + **Local Storage** ensures your team data is saved across sessions.
 - **Responsive Design**: Fully responsive layout that looks great on mobile and desktop.
 - **"Champion" Aesthetic**: Custom Gold & Royal Blue theme with high-quality animations.
 
@@ -19,7 +19,7 @@ A premium, interactive portfolio component for showcasing your elite Pokémon te
 
 - **Frontend**: [React](https://react.dev/) (w/ Vite), [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Backend / Auth**: [Firebase](https://firebase.google.com/) (Firestore & Authentication)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) with [Middleware/Persist](https://docs.pmnd.rs/zustand/integrations/persisting-store-data)
 - **Data Fetching**: [TanStack Query](https://tanstack.com/query/latest) (React Query)
 - **API**: [PokéAPI](https://pokeapi.co/)
 
@@ -28,7 +28,6 @@ A premium, interactive portfolio component for showcasing your elite Pokémon te
 ### Prerequisites
 
 - Node.js (v18+)
-- A Firebase project with **Firestore** and **Authentication** enabled.
 
 ### Installation
 
@@ -45,17 +44,7 @@ A premium, interactive portfolio component for showcasing your elite Pokémon te
     npm install
     ```
 
-3.  **Configure Environment Variables**
-    Create a `.env` file in the root directory and add your Firebase credentials:
 
-    ```env
-    VITE_FIREBASE_API_KEY=your_api_key
-    VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-    VITE_FIREBASE_PROJECT_ID=your_project_id
-    VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-    VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-    VITE_FIREBASE_APP_ID=your_app_id
-    ```
 
 4.  **Run Development Server**
     ```bash
@@ -67,21 +56,15 @@ A premium, interactive portfolio component for showcasing your elite Pokémon te
 ```bash
 src/
 ├── assets/         # Static assets (logos, images)
-├── components/     # Reusable UI components
-│   ├── admin/      # Admin-specific components (Editor, Dashboard Card)
-│   └── ...         # Public components (TeamCard, TeamGrid)
-├── contexts/       # React Contexts (AuthContext)
-├── hooks/          # Custom Hooks (usePokemonData, usePokemonTeam)
-├── pages/          # Page views (Home, Login, AdminDashboard)
+├── components/     # Reusable UI components (TeamCard, TeamGrid, etc.)
+├── hooks/          # Custom Hooks (usePokemonData)
+├── pages/          # Page views (Home, BuildManager)
+├── store/          # Zustand store for team persistence
 ├── utils/          # Utility functions
-├── firebase.ts     # Firebase configuration
 └── main.tsx        # Application entry point
 ```
 
-## 🔐 Admin Access
 
-To access the admin panel, navigate to `/admin`.
-_Note: You must set up an authenticated user in your Firebase Console to log in._
 
 ## 🙏 Credits
 

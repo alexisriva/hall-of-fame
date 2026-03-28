@@ -1,5 +1,4 @@
 import type { FC } from "react";
-import { Link } from "react-router-dom";
 import logo from "../assets/logo.svg";
 
 const Header: FC = () => {
@@ -13,18 +12,10 @@ const Header: FC = () => {
           alt="Hall of Fame Logo"
           className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]"
         />
-        <h1 className="relative text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-600 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]">
+        <h1 className="relative text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-amber-200 via-yellow-400 to-amber-600 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]">
           HALL OF FAME
         </h1>
       </div>
-
-      {/* Admin Link (Subtle) */}
-      <Link
-        to="/admin"
-        className="absolute top-4 right-4 text-xs text-white/20 hover:text-white/50 uppercase tracking-widest transition-colors cursor-pointer"
-      >
-        Admin
-      </Link>
     </header>
   );
 };
