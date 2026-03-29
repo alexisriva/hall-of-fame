@@ -79,22 +79,6 @@ const ROSTER: PokemonTeam = {
       ivs: { hp: 31, atk: 0, def: 31, spa: 31, spd: 31, spe: 31 },
     },
     {
-      id: "468",
-      name: "Togekiss",
-      species: {
-        name: "Togekiss",
-        sprite: SPRITE(468),
-        types: ["fairy", "flying"],
-      },
-      isShiny: false,
-      item: "Sitrus Berry",
-      ability: "Serene Grace",
-      nature: "Calm",
-      moves: ["Air Slash", "Dazzling Gleam", "Follow Me", "Protect"],
-      evs: { hp: 252, atk: 0, def: 4, spa: 0, spd: 252, spe: 0 },
-      ivs: { hp: 31, atk: 0, def: 31, spa: 31, spd: 31, spe: 31 },
-    },
-    {
       id: "445",
       name: "Garchomp",
       species: {
