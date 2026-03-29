@@ -1,5 +1,12 @@
 import { useState, type FC } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import {
+  HiArrowLongLeft,
+  HiStar,
+  HiOutlineStar,
+  HiOutlineTrash,
+  HiPlus,
+} from "react-icons/hi2";
 import { useGameStore, createEmptyBuild } from "../store/gameStore";
 import { usePokemonData } from "../hooks/usePokemonData";
 
@@ -112,7 +119,8 @@ const BuildManager: FC = () => {
   const navigate = useNavigate();
 
   const { party, pc } = useGameStore();
-  const pokemon = party.find((p) => p.id === id) || pc.find((p) => p.id === id);
+  const pokemon =
+    party.find((p) => p?.id === id) || pc.find((p) => p?.id === id);
 
   const saveBuild = useGameStore((state) => state.saveBuild);
   const deleteBuild = useGameStore((state) => state.deleteBuild);
@@ -202,9 +210,10 @@ const BuildManager: FC = () => {
         {/* ... (Header) */}
         <button
           onClick={() => navigate("/")}
-          className="text-gray-400 hover:text-white"
+          className="text-gray-400 hover:text-white flex items-center gap-2 group transition-colors"
         >
-          &larr; Back to Hub
+          <HiArrowLongLeft className="text-xl group-hover:-translate-x-1 transition-transform" />
+          <span>Back to Hub</span>
         </button>
         <h1 className="text-2xl font-bold">Build Manager</h1>
       </div>
@@ -501,31 +510,9 @@ const BuildManager: FC = () => {
                       }
                     >
                       {isEquipped ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          fill="currentColor"
-                          className="w-5 h-5"
-                        >
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
+                        <HiStar className="w-5 h-5" />
                       ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-5 h-5"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                          />
-                        </svg>
+                        <HiOutlineStar className="w-5 h-5" />
                       )}
                     </button>
 
@@ -539,18 +526,7 @@ const BuildManager: FC = () => {
                       }}
                       className="absolute bottom-2 right-2 p-1.5 rounded-full hover:bg-black/60 text-gray-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <HiOutlineTrash className="h-5 w-5" />
                     </button>
                   </div>
                 );
@@ -570,7 +546,7 @@ const BuildManager: FC = () => {
                   }}
                   className="relative h-32 rounded-xl border-2 border-dashed border-white/10 hover:border-amber-500 hover:bg-black/20 transition-all cursor-pointer group flex flex-col items-center justify-center text-gray-500 hover:text-amber-400"
                 >
-                  <span className="text-4xl mb-1">+</span>
+                  <HiPlus className="text-3xl mb-1" />
                   <span className="text-xs font-bold uppercase tracking-wider">
                     Create New
                   </span>

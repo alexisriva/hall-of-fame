@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import { HiOutlineBars4, HiOutlineTrash } from "react-icons/hi2";
 import { usePokemonData } from "../hooks/usePokemonData";
 import { useGameStore } from "../store/gameStore";
 
@@ -84,7 +85,7 @@ const TeamCard: FC<Props> = ({
       }
       `}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-white/5 to-transparent pointer-events-none" />
 
       <div className="p-6 relative z-10 flex flex-col items-center h-full">
         <div className="relative w-40 h-40 mb-2 transition-transform duration-500 group-hover:scale-110">
@@ -109,21 +110,10 @@ const TeamCard: FC<Props> = ({
                 e.stopPropagation();
                 onMove?.();
               }}
-              className="text-gray-400 hover:text-amber-400 p-2 bg-black/40 rounded-full backdrop-blur-sm hover:bg-black/60"
+              className="text-gray-400 hover:text-amber-400 p-2 bg-black/40 rounded-full backdrop-blur-sm hover:bg-black/60 flex items-center justify-center"
               title="Move Pokemon"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <HiOutlineBars4 className="h-5 w-5" />
             </button>
 
             {/* Remove Button */}
@@ -134,21 +124,10 @@ const TeamCard: FC<Props> = ({
                   deletePokemon(pokemon.id);
                 }
               }}
-              className="text-gray-400 hover:text-red-500 p-2 bg-black/40 rounded-full backdrop-blur-sm hover:bg-black/60"
+              className="text-gray-400 hover:text-red-500 p-2 bg-black/40 rounded-full backdrop-blur-sm hover:bg-black/60 flex items-center justify-center"
               title="Release Pokemon"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <HiOutlineTrash className="h-5 w-5" />
             </button>
           </div>
         )}

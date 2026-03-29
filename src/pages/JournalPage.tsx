@@ -1,69 +1,14 @@
 import { useState, type FC } from "react";
+import {
+  HiOutlineBolt,
+  HiOutlineExclamationTriangle,
+  HiOutlineLightBulb,
+} from "react-icons/hi2";
 import RosterSection from "../components/organisms/RosterSection";
 import SubsectionCard from "../components/organisms/SubsectionCard";
 import AnalysisCard from "../components/molecules/AnalysisCard";
 import Button from "../components/atoms/Button";
 import TextArea from "../components/atoms/TextArea";
-
-// ── Icons ────────────────────────────────────────────────────────────────────
-
-const IconBolt = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 14 14"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M8 1L2 8h5.5L6 13l6-7H7L8 1z" fill="currentColor" />
-  </svg>
-);
-
-const IconWarning = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 14 14"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M7 1.5L1 12h12L7 1.5z"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M7 6v3M7 10.5v.5"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-  </svg>
-);
-
-const IconBulb = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 14 14"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M7 1a4 4 0 00-2 7.465V10h4V8.465A4 4 0 007 1z"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M5 10h4M5.5 12h3"
-      stroke="currentColor"
-      strokeWidth="1.25"
-      strokeLinecap="round"
-    />
-  </svg>
-);
 
 // ── Mock data ─────────────────────────────────────────────────────────────────
 
@@ -118,7 +63,7 @@ const JournalPage: FC = () => {
         <RosterSection members={ROSTER} capacity={6} />
 
         {/* Strategic Leads */}
-        <SubsectionCard title="Strategic Leads" icon={<IconBolt />}>
+        <SubsectionCard title="Strategic Leads" icon={<HiOutlineBolt />}>
           <AnalysisCard
             pokemon={[
               { name: "Pikachu", imageUrl: SPRITE(25) },
@@ -138,7 +83,7 @@ const JournalPage: FC = () => {
         </SubsectionCard>
 
         {/* Critical Threats */}
-        <SubsectionCard title="Critical Threats" icon={<IconWarning />}>
+        <SubsectionCard title="Critical Threats" icon={<HiOutlineExclamationTriangle />}>
           <AnalysisCard
             title="Kyogre"
             tag={{ label: "God-Tier Threat", variant: "info" }}
@@ -154,7 +99,7 @@ const JournalPage: FC = () => {
         </SubsectionCard>
 
         {/* Researcher Observations */}
-        <SubsectionCard title="Researcher Observations" icon={<IconBulb />}>
+        <SubsectionCard title="Researcher Observations" icon={<HiOutlineLightBulb />}>
           <TextArea value={obs} onChange={setObs} rows={6} />
           <div className="flex items-center gap-2 flex-wrap">
             <Button label="Win Rate: 68%" variant="primary" />
