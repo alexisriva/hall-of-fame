@@ -2,24 +2,27 @@ import type { FC } from "react";
 import PokemonCard from "../molecules/PokemonCard";
 import Tag from "../atoms/Tag";
 
-interface RosterMember {
-  name: string;
-  imageUrl: string;
-  types?: string[];
-}
-
 interface RosterSectionProps {
-  members: RosterMember[];
+  members: PokemonBuild[];
   capacity: number;
   onCardClick?: (name: string) => void;
 }
 
-const RosterSection: FC<RosterSectionProps> = ({ members, capacity, onCardClick }) => (
+const RosterSection: FC<RosterSectionProps> = ({
+  members,
+  capacity,
+  onCardClick,
+}) => (
   <section className="flex flex-col gap-4">
     {/* Header */}
     <div className="flex items-center justify-between">
-      <h2 className="text-white font-semibold text-lg tracking-tight">Active Roster</h2>
-      <Tag label={`${members.length} / ${capacity} Assigned`} variant="default" />
+      <h2 className="text-white font-semibold text-lg tracking-tight">
+        Active Roster
+      </h2>
+      <Tag
+        label={`${members.length} / ${capacity} Assigned`}
+        variant="default"
+      />
     </div>
 
     {/* Grid */}
@@ -28,8 +31,8 @@ const RosterSection: FC<RosterSectionProps> = ({ members, capacity, onCardClick 
         <PokemonCard
           key={m.name}
           name={m.name}
-          imageUrl={m.imageUrl}
-          types={m.types}
+          imageUrl={m.species!.sprite}
+          types={m.species!.types}
           onClick={onCardClick ? () => onCardClick(m.name) : undefined}
         />
       ))}

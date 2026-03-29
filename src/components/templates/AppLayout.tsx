@@ -7,6 +7,9 @@ const AppLayout: FC = () => (
     <Sidebar />
     <main className="flex-1 overflow-y-auto">
       <Outlet />
+      <footer className="text-center mt-20 pb-8 opacity-40 tracking-widest text-white z-10 relative">
+        <p>Alexis Rivadeneira © 2026</p>
+      </footer>
     </main>
   </div>
 );

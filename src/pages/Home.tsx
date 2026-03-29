@@ -56,10 +56,6 @@ const Home: FC = () => {
           <PcGrid members={pc} />
         </section>
       </main>
-
-      <footer className="text-center mt-20 pb-8 opacity-40 text-xs tracking-widest text-white z-10 relative">
-        <p>LOCAL DATA STORAGE • POKEAPI</p>
-      </footer>
     </div>
   );
 };

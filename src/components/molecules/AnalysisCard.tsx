@@ -3,11 +3,6 @@ import Tag from "../atoms/Tag";
 import type { TagVariant } from "../atoms/Tag";
 import TextArea from "../atoms/TextArea";
 
-interface PokemonThumb {
-  name: string;
-  imageUrl: string;
-}
-
 interface AnalysisCardProps {
   description: string;
   onDescriptionChange?: (value: string) => void;
@@ -16,7 +11,7 @@ interface AnalysisCardProps {
   /** Tag displayed right-aligned next to the title */
   tag?: { label: string; variant?: TagVariant };
   /** Small Pokemon thumbnails — used in the "strategic lead" layout */
-  pokemon?: PokemonThumb[];
+  pokemon?: PokemonBuild[];
 }
 
 const AnalysisCard: FC<AnalysisCardProps> = ({
@@ -43,7 +38,7 @@ const AnalysisCard: FC<AnalysisCardProps> = ({
               className="w-14 h-14 rounded-xl bg-black/40 overflow-hidden flex items-center justify-center shrink-0"
             >
               <img
-                src={p.imageUrl}
+                src={p.species!.sprite}
                 alt={p.name}
                 className="w-full h-full object-contain"
               />

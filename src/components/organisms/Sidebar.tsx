@@ -1,31 +1,34 @@
 import type { FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  HiOutlineBookOpen,
-  HiOutlineUsers,
-  HiOutlineHandRaised,
+  HiOutlineSquare3Stack3D,
   HiOutlineClipboardDocumentList,
   HiPlus,
 } from "react-icons/hi2";
+import { TbMedal2, TbTriangleSquareCircle } from "react-icons/tb";
 import Tile from "../molecules/Tile";
 import Button from "../atoms/Button";
 
 const NAV_ITEMS = [
   {
-    label: "Field Log",
-    icon: <HiOutlineBookOpen size={18} />,
-    path: "/journal",
-  },
-  { label: "Team Hub", icon: <HiOutlineUsers size={18} />, path: "/" },
-  {
-    label: "Data Vault",
-    icon: <HiOutlineHandRaised size={18} />,
-    path: "/vault",
+    label: "Hall of Fame",
+    icon: <TbMedal2 size={18} />,
+    path: "/",
   },
   {
-    label: "Research Notes",
+    label: "Team Hub",
+    icon: <HiOutlineSquare3Stack3D size={18} />,
+    path: "/team-hub",
+  },
+  {
+    label: "Builds",
+    icon: <TbTriangleSquareCircle size={18} />,
+    path: "/builds",
+  },
+  {
+    label: "Journal",
     icon: <HiOutlineClipboardDocumentList size={18} />,
-    path: "/notes",
+    path: "/journal",
   },
 ];
 

@@ -107,7 +107,7 @@ const AddPokemonModal: FC<Props> = ({ isOpen, onClose, onAdd }) => {
             <button
               type="submit"
               disabled={!search}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-white font-bold rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5 cursor-pointer"
+              className="flex-1 px-4 py-3 bg-linear-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-white font-bold rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5 cursor-pointer"
             >
               Add Member
             </button>
