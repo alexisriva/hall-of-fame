@@ -44,9 +44,7 @@ A premium, interactive portfolio component for showcasing your elite Pokémon te
     npm install
     ```
 
-
-
-4.  **Run Development Server**
+3.  **Run Development Server**
     ```bash
     npm run dev
     ```
@@ -64,11 +62,9 @@ src/
 └── main.tsx        # Application entry point
 ```
 
-
-
 ## 🙏 Credits
 
-- Icons: [Pokemon Type Icons](https://github.com/partywhale/pokemon-type-icons/) by [partywhale](https://github.com/partywhale)
+- Icons: [Pokemon Type Icons](https://www.deviantart.com/jormxdos/gallery/88740781/pokemon-type-symbols-paldea) & [Pokemon Tera Type Icons](https://www.deviantart.com/jormxdos/gallery/85377027/pokemon-tera-type-symbols-paldea) by [jormxdos](https://www.deviantart.com/jormxdos)
 
 ---
 

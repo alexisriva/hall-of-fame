@@ -1,14 +1,15 @@
 import type { FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineSquare3Stack3D } from "react-icons/hi2";
-import { TbMedal2, TbTriangleSquareCircle } from "react-icons/tb";
+import { TbTriangleSquareCircle } from "react-icons/tb";
+import { SlTrophy } from "react-icons/sl";
 import Tile from "../molecules/Tile";
 import logo from "../../assets/logo.svg";
 
 const NAV_ITEMS = [
   {
     label: "Home",
-    icon: <TbMedal2 size={18} />,
+    icon: <SlTrophy size={18} />,
     path: "/",
   },
   {

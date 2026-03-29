@@ -1,12 +1,5 @@
 import type { FC } from "react";
-
-const typeIcons = import.meta.glob("../../assets/icons/*.svg", {
-  eager: true,
-  import: "default",
-}) as Record<string, string>;
-
-const getTypeIcon = (type: string): string | undefined =>
-  typeIcons[`../../assets/icons/${type}.svg`];
+import TypeIcon from "../atoms/TypeIcon";
 
 interface BuildCardProps {
   build: PokemonBuild;
@@ -30,12 +23,9 @@ const BuildCard: FC<BuildCardProps> = ({ build, onClick }) => {
         </span>
         {types.length > 0 && (
           <div className="flex items-center gap-1.5">
-            {types.map((type) => {
-              const icon = getTypeIcon(type);
-              return icon ? (
-                <img key={type} src={icon} alt={type} className="w-5 h-5" />
-              ) : null;
-            })}
+            {types.map((type) => (
+              <TypeIcon key={type} type={type} />
+            ))}
           </div>
         )}
       </div>

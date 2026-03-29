@@ -2,33 +2,33 @@ import type { FC } from "react";
 
 // Eagerly import all type icons so Vite can bundle them correctly
 const TYPE_ICONS: Record<string, string> = import.meta.glob(
-  "../../assets/icons/*.svg",
+  "../../assets/types/*.png",
   { eager: true, import: "default" },
 ) as Record<string, string>;
 
 function getTypeIcon(type: string): string | undefined {
-  return TYPE_ICONS[`../../assets/icons/${type.toLowerCase()}.svg`];
+  return TYPE_ICONS[`../../assets/types/${type.toLowerCase()}.png`];
 }
 
 const TYPE_BG: Record<string, string> = {
-  fire:     "#1f1108",
-  water:    "#08121e",
-  grass:    "#0c1a0c",
+  fire: "#1f1108",
+  water: "#08121e",
+  grass: "#0c1a0c",
   electric: "#1a190a",
-  psychic:  "#1e0c13",
-  ice:      "#0a181e",
-  dragon:   "#0e0c1e",
-  dark:     "#101010",
-  fairy:    "#1e0c19",
-  normal:   "#141414",
+  psychic: "#1e0c13",
+  ice: "#0a181e",
+  dragon: "#0e0c1e",
+  dark: "#101010",
+  fairy: "#1e0c19",
+  normal: "#141414",
   fighting: "#1a0d0a",
-  flying:   "#0c1020",
-  poison:   "#14091e",
-  ground:   "#1a1408",
-  rock:     "#141210",
-  bug:      "#111a08",
-  ghost:    "#0e0b1a",
-  steel:    "#0e1318",
+  flying: "#0c1020",
+  poison: "#14091e",
+  ground: "#1a1408",
+  rock: "#141210",
+  bug: "#111a08",
+  ghost: "#0e0b1a",
+  steel: "#0e1318",
 };
 
 function getTypeBg(type: string): string {
@@ -42,7 +42,12 @@ interface PokemonCardProps {
   onClick?: () => void;
 }
 
-const PokemonCard: FC<PokemonCardProps> = ({ name, imageUrl, types = [], onClick }) => (
+const PokemonCard: FC<PokemonCardProps> = ({
+  name,
+  imageUrl,
+  types = [],
+  onClick,
+}) => (
   <div
     onClick={onClick}
     role={onClick ? "button" : undefined}
