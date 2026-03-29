@@ -46,6 +46,12 @@ const capitalize = (s: string) =>
 
 // ── Select style (shared) ────────────────────────────────────────────────────
 
+const allTypes = [
+  "bug", "dark", "dragon", "electric", "fairy", "fighting",
+  "fire", "flying", "ghost", "grass", "ground", "ice",
+  "normal", "poison", "psychic", "rock", "steel", "water",
+] as const;
+
 const selectCls =
   "w-full rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 appearance-none cursor-pointer transition-all";
 
@@ -91,6 +97,11 @@ function parsePokepaste(text: string): Partial<PokemonBuild> & {
         const atIdx = line.lastIndexOf(" @ ");
         result.item = line.slice(atIdx + 3).trim();
       }
+      continue;
+    }
+
+    if (line.startsWith("Tera Type:")) {
+      result.teraType = line.slice(10).trim().toLowerCase();
       continue;
     }
 
@@ -465,6 +476,29 @@ const BuildManager: FC<BuildManagerProps> = ({
                   {natures.map((n) => (
                     <option key={n} value={n} className="bg-[#0F1115]">
                       {n}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
+                  Tera Type
+                </span>
+                <select
+                  value={localBuild.teraType ?? ""}
+                  onChange={(e) =>
+                    setLocalBuild((prev) => ({
+                      ...prev,
+                      teraType: e.target.value || undefined,
+                    }))
+                  }
+                  className={selectCls}
+                >
+                  <option value="" className="bg-[#0F1115]">None</option>
+                  {allTypes.map((t) => (
+                    <option key={t} value={t} className="bg-[#0F1115]">
+                      {capitalize(t)}
                     </option>
                   ))}
                 </select>

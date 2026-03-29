@@ -89,6 +89,7 @@ type PokemonBuild = {
   moves: [string, string, string, string];
   evs: Stats;
   ivs: Stats;
+  teraType?: string;
 };
 
 type Pokemon = {

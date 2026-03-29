@@ -9,6 +9,7 @@ interface BuildCardProps {
 const BuildCard: FC<BuildCardProps> = ({ build, onClick }) => {
   const types = build.species?.types ?? [];
   const sprite = build.species?.sprite;
+  const teraType = build.teraType;
 
   return (
     <div
@@ -26,6 +27,7 @@ const BuildCard: FC<BuildCardProps> = ({ build, onClick }) => {
             {types.map((type) => (
               <TypeIcon key={type} type={type} />
             ))}
+            {teraType && <TypeIcon type={teraType} size={30} tera />}
           </div>
         )}
       </div>
