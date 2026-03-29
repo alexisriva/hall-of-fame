@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { useState, type FC } from "react";
 import {
   HiOutlineBolt,
   HiOutlineExclamationTriangle,
@@ -7,6 +7,9 @@ import {
 import RosterSection from "../components/organisms/RosterSection";
 import SubsectionCard from "../components/organisms/SubsectionCard";
 import AnalysisCard from "../components/molecules/AnalysisCard";
+import Modal from "../components/molecules/Modal";
+import MatchLeadForm from "../components/molecules/MatchLeadForm";
+import MatchCounterForm from "../components/molecules/MatchCounterForm";
 import Button from "../components/atoms/Button";
 import TextArea from "../components/atoms/TextArea";
 
@@ -15,6 +18,53 @@ interface Props {
 }
 
 const JournalPage: FC<Props> = ({ team }) => {
+  const [leads, setLeads] = useState<MatchLead[]>(team.leads);
+  const [counters, setCounters] = useState<MatchCounter[]>(team.counters);
+  const [insights, setInsights] = useState(team.additionalInsights);
+
+  const [leadModalOpen, setLeadModalOpen] = useState(false);
+  const [counterModalOpen, setCounterModalOpen] = useState(false);
+  const [editingLeadIdx, setEditingLeadIdx] = useState<number | null>(null);
+  const [editingCounterIdx, setEditingCounterIdx] = useState<number | null>(null);
+
+  const closeLeadModal = () => {
+    setLeadModalOpen(false);
+    setEditingLeadIdx(null);
+  };
+
+  const closeCounterModal = () => {
+    setCounterModalOpen(false);
+    setEditingCounterIdx(null);
+  };
+
+  const handleSaveLead = (lead: MatchLead) => {
+    if (editingLeadIdx !== null) {
+      setLeads((prev) => prev.map((l, i) => (i === editingLeadIdx ? lead : l)));
+    } else {
+      setLeads((prev) => [...prev, lead]);
+    }
+    closeLeadModal();
+  };
+
+  const handleDeleteLead = (idx: number) => {
+    setLeads((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleSaveCounter = (counter: MatchCounter) => {
+    if (editingCounterIdx !== null) {
+      setCounters((prev) =>
+        prev.map((c, i) => (i === editingCounterIdx ? counter : c)),
+      );
+    } else {
+      setCounters((prev) => [...prev, counter]);
+    }
+    closeCounterModal();
+  };
+
+  const handleDeleteCounter = (idx: number) => {
+    setCounters((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   return (
     <div className="flex flex-col gap-8 px-8 py-10">
       {/* Header */}
@@ -31,12 +81,29 @@ const JournalPage: FC<Props> = ({ team }) => {
       <RosterSection members={team.pokemon} capacity={6} />
 
       {/* Strategic Leads */}
-      <SubsectionCard title="Strategic Leads" icon={<HiOutlineBolt />}>
-        {team.leads.map((lead) => (
+      <SubsectionCard
+        title="Strategic Leads"
+        icon={<HiOutlineBolt />}
+        action={
+          <Button
+            label="+ Add"
+            variant="secondary"
+            onClick={() => setLeadModalOpen(true)}
+          />
+        }
+      >
+        {leads.map((lead, i) => (
           <AnalysisCard
+            key={i}
             pokemon={lead.pokemon}
             description={lead.notes}
-            onDescriptionChange={() => {}}
+            onDescriptionChange={(notes) =>
+              setLeads((prev) =>
+                prev.map((l, idx) => (idx === i ? { ...l, notes } : l)),
+              )
+            }
+            onEdit={() => { setEditingLeadIdx(i); setLeadModalOpen(true); }}
+            onDelete={() => handleDeleteLead(i)}
           />
         ))}
       </SubsectionCard>
@@ -45,29 +112,68 @@ const JournalPage: FC<Props> = ({ team }) => {
       <SubsectionCard
         title="Critical Threats"
         icon={<HiOutlineExclamationTriangle />}
+        action={
+          <Button
+            label="+ Add"
+            variant="secondary"
+            onClick={() => setCounterModalOpen(true)}
+          />
+        }
       >
-        {team.counters.map((counter) => (
+        {counters.map((counter, i) => (
           <AnalysisCard
+            key={i}
             title={counter.pokemon.species!.name}
-            tag={{ label: "God-Tier Threat", variant: "info" }}
+            tag={{ label: "Threat", variant: "danger" }}
             description={counter.notes}
-            onDescriptionChange={() => {}}
+            onDescriptionChange={(notes) =>
+              setCounters((prev) =>
+                prev.map((c, idx) => (idx === i ? { ...c, notes } : c)),
+              )
+            }
+            onEdit={() => { setEditingCounterIdx(i); setCounterModalOpen(true); }}
+            onDelete={() => handleDeleteCounter(i)}
           />
         ))}
       </SubsectionCard>
 
       {/* Additional Insights */}
       <SubsectionCard title="Additional Insights" icon={<HiOutlineLightBulb />}>
-        <TextArea
-          value={team.additionalInsights}
-          onChange={() => {}}
-          rows={6}
-        />
+        <TextArea value={insights} onChange={setInsights} rows={6} />
         <div className="flex items-center gap-2 flex-wrap">
           <Button label={`Wins: ${team.wins}`} variant="primary" />
           <Button label={`Losses: ${team.losses}`} variant="secondary" />
         </div>
       </SubsectionCard>
+
+      {/* Lead Modal */}
+      <Modal
+        isOpen={leadModalOpen}
+        title={editingLeadIdx !== null ? "Edit Strategic Lead" : "Add Strategic Lead"}
+        onClose={closeLeadModal}
+      >
+        <MatchLeadForm
+          roster={team.pokemon}
+          onSubmit={handleSaveLead}
+          onCancel={closeLeadModal}
+          initialPokemon={editingLeadIdx !== null ? leads[editingLeadIdx].pokemon : undefined}
+          initialNotes={editingLeadIdx !== null ? leads[editingLeadIdx].notes : undefined}
+        />
+      </Modal>
+
+      {/* Counter Modal */}
+      <Modal
+        isOpen={counterModalOpen}
+        title={editingCounterIdx !== null ? "Edit Critical Threat" : "Add Critical Threat"}
+        onClose={closeCounterModal}
+      >
+        <MatchCounterForm
+          onSubmit={handleSaveCounter}
+          onCancel={closeCounterModal}
+          initialSpeciesName={editingCounterIdx !== null ? counters[editingCounterIdx].pokemon.species?.name : undefined}
+          initialNotes={editingCounterIdx !== null ? counters[editingCounterIdx].notes : undefined}
+        />
+      </Modal>
     </div>
   );
 };
