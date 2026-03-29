@@ -20,6 +20,7 @@ export const createEmptyBuild = (species: string): PokemonBuild => ({
 interface GameStore {
   builds: PokemonBuild[];
   teams: PokemonTeam[];
+  teamCounter: number;
 
   // Build actions
   addBuild: (build: PokemonBuild) => void;
@@ -27,7 +28,7 @@ interface GameStore {
   deleteBuild: (buildId: string) => void;
 
   // Team actions
-  addTeam: (team: PokemonTeam) => void;
+  addTeam: (team: Omit<PokemonTeam, "id">) => void;
   updateTeam: (teamId: string, updates: Partial<PokemonTeam>) => void;
   deleteTeam: (teamId: string) => void;
 }
@@ -37,6 +38,7 @@ export const useGameStore = create<GameStore>()(
     (set) => ({
       builds: [],
       teams: [],
+      teamCounter: 1,
 
       addBuild: (build) =>
         set((state) => ({ builds: [...state.builds, build] })),
@@ -57,7 +59,10 @@ export const useGameStore = create<GameStore>()(
         })),
 
       addTeam: (team) =>
-        set((state) => ({ teams: [...state.teams, team] })),
+        set((state) => ({
+          teams: [...state.teams, { ...team, id: String(state.teamCounter) }],
+          teamCounter: state.teamCounter + 1,
+        })),
 
       updateTeam: (teamId, updates) =>
         set((state) => ({

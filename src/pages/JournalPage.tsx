@@ -1,8 +1,10 @@
-import { useState, type FC } from "react";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   HiOutlineBolt,
   HiOutlineExclamationTriangle,
   HiOutlineLightBulb,
+  HiArrowLongLeft,
 } from "react-icons/hi2";
 import RosterSection from "../components/organisms/RosterSection";
 import SubsectionCard from "../components/organisms/SubsectionCard";
@@ -13,12 +15,24 @@ import MatchLeadForm from "../components/molecules/MatchLeadForm";
 import MatchCounterForm from "../components/molecules/MatchCounterForm";
 import Button from "../components/atoms/Button";
 import TextArea from "../components/atoms/TextArea";
+import { useGameStore } from "../store/gameStore";
 
-interface Props {
-  team: PokemonTeam;
-}
+const JournalPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const teams = useGameStore((s) => s.teams);
+  const builds = useGameStore((s) => s.builds);
+  const updateTeam = useGameStore((s) => s.updateTeam);
+  const team = teams.find((t) => t.id === id);
 
-const JournalPage: FC<Props> = ({ team }) => {
+  if (!team) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-3">
+        <span className="text-white/20 text-sm">Team not found.</span>
+        <Button label="Back to Teams" variant="secondary" onClick={() => navigate("/team-hub")} />
+      </div>
+    );
+  }
   const [leads, setLeads] = useState<MatchLead[]>(team.leads);
   const [counters, setCounters] = useState<MatchCounter[]>(team.counters);
   const [insights, setInsights] = useState(team.additionalInsights);
@@ -71,17 +85,37 @@ const JournalPage: FC<Props> = ({ team }) => {
   return (
     <div className="flex flex-col gap-8 px-8 py-10">
       {/* Header */}
-      <header className="flex flex-col gap-1">
-        <span className="text-xs text-[#b22200] font-semibold uppercase tracking-[0.2em]">
-          Team {team.id}
-        </span>
-        <h1 className="text-4xl font-bold text-white tracking-tight leading-none">
-          {team.name}
-        </h1>
+      <header className="flex flex-col gap-3">
+        <button
+          onClick={() => navigate("/team-hub")}
+          className="flex items-center gap-1.5 text-white/30 hover:text-white/70 transition-colors cursor-pointer w-fit"
+        >
+          <HiArrowLongLeft size={18} />
+          <span className="text-xs font-medium">Team Hub</span>
+        </button>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-[#b22200] font-semibold uppercase tracking-[0.2em]">
+            Team {team.id}
+          </span>
+          <h1 className="text-4xl font-bold text-white tracking-tight leading-none">
+            {team.name}
+          </h1>
+        </div>
       </header>
 
       {/* Active Roster */}
-      <RosterSection members={team.pokemon} capacity={6} />
+      <RosterSection
+        memberIds={team.pokemon}
+        capacity={6}
+        onAdd={(buildId) =>
+          updateTeam(team.id, { pokemon: [...team.pokemon, buildId] })
+        }
+        onRemove={(buildId) =>
+          updateTeam(team.id, {
+            pokemon: team.pokemon.filter((id) => id !== buildId),
+          })
+        }
+      />
 
       {/* Strategic Leads */}
       <SubsectionCard
@@ -156,7 +190,9 @@ const JournalPage: FC<Props> = ({ team }) => {
         onClose={closeLeadModal}
       >
         <MatchLeadForm
-          roster={team.pokemon}
+          roster={team.pokemon
+            .map((id) => builds.find((b) => b.id === id))
+            .filter(Boolean) as PokemonBuild[]}
           onSubmit={handleSaveLead}
           onCancel={closeLeadModal}
           initialPokemon={editingLeadIdx !== null ? leads[editingLeadIdx].pokemon : undefined}
