@@ -100,7 +100,7 @@ type Pokemon = {
 };
 
 type PokemonTeam = {
-  id: string; //uuid
+  id: string;
   regulation: string;
   name: string;
   /** Array of PokemonBuild IDs — resolve against the store's `builds` array */

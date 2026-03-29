@@ -5,230 +5,13 @@ import Button from "../atoms/Button";
 import TextInput from "../atoms/TextInput";
 import Slider from "../atoms/Slider";
 import Loading from "../atoms/Loading";
-
-// ── Constants ────────────────────────────────────────────────────────────────
-
-const statLabels = ["hp", "atk", "def", "spa", "spd", "spe"] as const;
-
-export const natures: Nature[] = [
-  "Adamant",
-  "Bashful",
-  "Bold",
-  "Brave",
-  "Calm",
-  "Careful",
-  "Docile",
-  "Gentle",
-  "Hardy",
-  "Hasty",
-  "Impish",
-  "Jolly",
-  "Lax",
-  "Lonely",
-  "Mild",
-  "Modest",
-  "Naive",
-  "Naughty",
-  "Quiet",
-  "Quirky",
-  "Rash",
-  "Relaxed",
-  "Sassy",
-  "Serious",
-  "Timid",
-];
-
-const capitalize = (s: string) =>
-  s
-    .split(" ")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-
-// ── Select style (shared) ────────────────────────────────────────────────────
-
-const allTypes = [
-  "bug", "dark", "dragon", "electric", "fairy", "fighting",
-  "fire", "flying", "ghost", "grass", "ground", "ice",
-  "normal", "poison", "psychic", "rock", "steel", "water",
-] as const;
+import MoveAutocomplete from "../molecules/MoveAutocomplete";
+import { NATURES, STATS, TYPES } from "../../utils/constants";
+import { capitalize } from "../../utils/helpers";
+import { parsePokepaste } from "../../utils/parsePokepaste";
 
 const selectCls =
   "w-full rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 appearance-none cursor-pointer transition-all";
-
-// ── Pokepaste parser ─────────────────────────────────────────────────────────
-
-const evKeyMap: Record<string, keyof Stats> = {
-  HP: "hp",
-  Atk: "atk",
-  Def: "def",
-  SpA: "spa",
-  SpD: "spd",
-  Spe: "spe",
-};
-
-function parsePokepaste(text: string): Partial<PokemonBuild> & {
-  evs: Stats;
-  ivs: Stats;
-  moves: [string, string, string, string];
-} {
-  const lines = text
-    .trim()
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
-
-  const evs: Stats = { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 };
-  const ivs: Stats = { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 };
-  const moves: [string, string, string, string] = ["", "", "", ""];
-  const result: Partial<PokemonBuild> & {
-    evs: Stats;
-    ivs: Stats;
-    moves: [string, string, string, string];
-  } = { evs, ivs, moves };
-
-  let moveCount = 0;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    // First line: "Species @ Item" or "Species (nickname) @ Item"
-    if (i === 0) {
-      if (line.includes(" @ ")) {
-        const atIdx = line.lastIndexOf(" @ ");
-        result.item = line.slice(atIdx + 3).trim();
-      }
-      continue;
-    }
-
-    if (line.startsWith("Tera Type:")) {
-      result.teraType = line.slice(10).trim().toLowerCase();
-      continue;
-    }
-
-    if (line.startsWith("Shiny:")) {
-      result.isShiny = line.slice(6).trim().toLowerCase() === "yes";
-      continue;
-    }
-
-    if (line.startsWith("Ability:")) {
-      result.ability = line
-        .slice(8)
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "-");
-      continue;
-    }
-
-    if (line.startsWith("EVs:")) {
-      line
-        .slice(4)
-        .trim()
-        .split("/")
-        .forEach((part) => {
-          const m = part.trim().match(/^(\d+)\s+(\w+)$/);
-          if (m) {
-            const key = evKeyMap[m[2]];
-            if (key) evs[key] = parseInt(m[1], 10);
-          }
-        });
-      continue;
-    }
-
-    if (line.startsWith("IVs:")) {
-      line
-        .slice(4)
-        .trim()
-        .split("/")
-        .forEach((part) => {
-          const m = part.trim().match(/^(\d+)\s+(\w+)$/);
-          if (m) {
-            const key = evKeyMap[m[2]];
-            if (key) ivs[key] = parseInt(m[1], 10);
-          }
-        });
-      continue;
-    }
-
-    if (line.endsWith(" Nature")) {
-      result.nature = line.slice(0, -7).trim() as Nature;
-      continue;
-    }
-
-    if (line.startsWith("- ") && moveCount < 4) {
-      moves[moveCount++] = line.slice(2).trim();
-      continue;
-    }
-  }
-
-  return result;
-}
-
-// ── MoveAutocomplete ─────────────────────────────────────────────────────────
-
-interface MoveInputProps {
-  value: string;
-  onChange: (val: string) => void;
-  availableMoves: string[];
-  placeholder?: string;
-}
-
-const MoveAutocomplete: FC<MoveInputProps> = ({
-  value,
-  onChange,
-  availableMoves,
-  placeholder,
-}) => {
-  const [show, setShow] = useState(false);
-  const [query, setQuery] = useState(value);
-
-  if (value !== query && !show) setQuery(value);
-
-  const filtered =
-    query === ""
-      ? []
-      : availableMoves
-          .filter((m) => m.toLowerCase().includes(query.toLowerCase()))
-          .slice(0, 10);
-
-  return (
-    <div className="relative">
-      <input
-        value={query}
-        onChange={(e) => {
-          const val = capitalize(e.target.value.replace(/-/g, " "));
-          setQuery(val);
-          onChange(val);
-          setShow(true);
-        }}
-        onFocus={() => setShow(true)}
-        onBlur={() => setTimeout(() => setShow(false), 200)}
-        placeholder={placeholder}
-        className="w-full rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 transition-all"
-      />
-      {show && filtered.length > 0 && (
-        <div className="absolute z-50 w-full bg-[#161C29] border border-white/5 rounded-xl shadow-xl max-h-48 overflow-y-auto mt-1">
-          {filtered.map((move) => (
-            <div
-              key={move}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                const val = capitalize(move.replace(/-/g, " "));
-                setQuery(val);
-                onChange(val);
-                setShow(false);
-              }}
-              className="px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-[#b22200]/10 cursor-pointer transition-colors"
-            >
-              {capitalize(move.replace(/-/g, " "))}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ── BuildManager ─────────────────────────────────────────────────────────────
 
 interface BuildManagerProps {
   species: string;
@@ -254,18 +37,14 @@ const BuildManager: FC<BuildManagerProps> = ({
   const [pasteText, setPasteText] = useState("");
   const [parseError, setParseError] = useState("");
 
-  // ── Sprite ─────────────────────────────────────────────────────────────────
-
   const spriteUrl = localBuild.isShiny
     ? data?.sprites.other?.["official-artwork"]?.front_shiny ||
       data?.sprites.front_shiny
     : data?.sprites.other?.["official-artwork"]?.front_default ||
       data?.sprites.front_default;
 
-  // ── Handlers ───────────────────────────────────────────────────────────────
-
   const handleStatChange = (
-    stat: (typeof statLabels)[number],
+    stat: (typeof STATS)[number],
     val: number,
     type: "evs" | "ivs",
   ) => {
@@ -277,7 +56,7 @@ const BuildManager: FC<BuildManagerProps> = ({
         const steps = Math.round((newVal - 4) / 8);
         newVal = Math.max(0, Math.min(252, 4 + steps * 8));
       }
-      const otherTotal = statLabels.reduce(
+      const otherTotal = STATS.reduce(
         (acc, s) => (s === stat ? acc : acc + localBuild.evs[s]),
         0,
       );
@@ -313,7 +92,9 @@ const BuildManager: FC<BuildManagerProps> = ({
       setParseError("");
       setTab("build");
     } catch {
-      setParseError("Could not parse the pokepaste. Check the format and try again.");
+      setParseError(
+        "Could not parse the pokepaste. Check the format and try again.",
+      );
     }
   };
 
@@ -473,7 +254,7 @@ const BuildManager: FC<BuildManagerProps> = ({
                   }
                   className={selectCls}
                 >
-                  {natures.map((n) => (
+                  {NATURES.map((n) => (
                     <option key={n} value={n} className="bg-[#0F1115]">
                       {n}
                     </option>
@@ -495,8 +276,10 @@ const BuildManager: FC<BuildManagerProps> = ({
                   }
                   className={selectCls}
                 >
-                  <option value="" className="bg-[#0F1115]">None</option>
-                  {allTypes.map((t) => (
+                  <option value="" className="bg-[#0F1115]">
+                    None
+                  </option>
+                  {Object.keys(TYPES).map((t) => (
                     <option key={t} value={t} className="bg-[#0F1115]">
                       {capitalize(t)}
                     </option>
@@ -530,7 +313,7 @@ const BuildManager: FC<BuildManagerProps> = ({
               Stats — EVs / IVs
             </span>
             <div className="rounded-xl bg-[#161C29] px-5 py-4 flex flex-col gap-3">
-              {statLabels.map((stat) => (
+              {STATS.map((stat) => (
                 <div key={stat} className="flex items-center gap-3">
                   <span className="text-white/30 text-xs font-mono uppercase w-8 shrink-0">
                     {stat}
