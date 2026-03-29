@@ -6,6 +6,7 @@ import TextInput from "../atoms/TextInput";
 import Slider from "../atoms/Slider";
 import Loading from "../atoms/Loading";
 import MoveAutocomplete from "../molecules/MoveAutocomplete";
+import StatsViewer from "../molecules/StatsViewer";
 import { NATURES, STATS, TYPES } from "../../utils/constants";
 import { capitalize } from "../../utils/helpers";
 import { parsePokepaste } from "../../utils/parsePokepaste";
@@ -36,6 +37,26 @@ const BuildManager: FC<BuildManagerProps> = ({
   const [tab, setTab] = useState<"build" | "import">("build");
   const [pasteText, setPasteText] = useState("");
   const [parseError, setParseError] = useState("");
+
+  const API_STAT_MAP: Record<string, keyof Stats> = {
+    hp: "hp",
+    attack: "atk",
+    defense: "def",
+    "special-attack": "spa",
+    "special-defense": "spd",
+    speed: "spe",
+  };
+
+  const baseStats: Stats = data
+    ? data.stats.reduce(
+        (acc, s) => {
+          const key = API_STAT_MAP[s.stat.name];
+          if (key) acc[key] = s.base_stat;
+          return acc;
+        },
+        { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } as Stats,
+      )
+    : { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 };
 
   const spriteUrl = localBuild.isShiny
     ? data?.sprites.other?.["official-artwork"]?.front_shiny ||
@@ -195,7 +216,7 @@ const BuildManager: FC<BuildManagerProps> = ({
         <>
           {/* Body: Item/Ability/Nature + Moves */}
           <div className="flex flex-col gap-6">
-            {/* Left: Item, Ability, Nature */}
+            {/* Item, Ability, Nature, Tera Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4">
               <div className="flex flex-col gap-1.5">
                 <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
@@ -288,7 +309,7 @@ const BuildManager: FC<BuildManagerProps> = ({
               </div>
             </div>
 
-            {/* Right: Moves */}
+            {/* Moves */}
             <div className="flex flex-col gap-1.5">
               <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
                 Moveset
@@ -360,6 +381,16 @@ const BuildManager: FC<BuildManagerProps> = ({
               ))}
             </div>
           </div>
+
+          {/* Stats Viewer */}
+          {data && (
+            <StatsViewer
+              baseStats={baseStats}
+              evs={localBuild.evs}
+              ivs={localBuild.ivs}
+              nature={localBuild.nature}
+            />
+          )}
 
           {/* Save */}
           <div className="flex justify-end pt-1">
