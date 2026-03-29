@@ -11,14 +11,38 @@ import Loading from "../atoms/Loading";
 const statLabels = ["hp", "atk", "def", "spa", "spd", "spe"] as const;
 
 export const natures: Nature[] = [
-  "Adamant", "Bashful", "Bold", "Brave", "Calm", "Careful", "Docile",
-  "Gentle", "Hardy", "Hasty", "Impish", "Jolly", "Lax", "Lonely",
-  "Mild", "Modest", "Naive", "Naughty", "Quiet", "Quirky", "Rash",
-  "Relaxed", "Sassy", "Serious", "Timid",
+  "Adamant",
+  "Bashful",
+  "Bold",
+  "Brave",
+  "Calm",
+  "Careful",
+  "Docile",
+  "Gentle",
+  "Hardy",
+  "Hasty",
+  "Impish",
+  "Jolly",
+  "Lax",
+  "Lonely",
+  "Mild",
+  "Modest",
+  "Naive",
+  "Naughty",
+  "Quiet",
+  "Quirky",
+  "Rash",
+  "Relaxed",
+  "Sassy",
+  "Serious",
+  "Timid",
 ];
 
 const capitalize = (s: string) =>
-  s.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  s
+    .split(" ")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 
 // ── Select style (shared) ────────────────────────────────────────────────────
 
@@ -165,9 +189,7 @@ const BuildManager: FC<BuildManagerProps> = ({
       ...localBuild,
       species: {
         name: species.toLowerCase(),
-        sprite:
-          data.sprites.other?.["official-artwork"]?.front_default ||
-          data.sprites.front_default,
+        sprite: spriteUrl || "",
         types: data.types.map((t) => t.type.name),
       },
     };

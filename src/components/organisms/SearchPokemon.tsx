@@ -80,7 +80,7 @@ const SearchPokemon: FC<Props> = ({ onClose, onConfirm }) => {
           label="Add Member"
           variant="primary"
           onClick={handleConfirm}
-          disabled={!search.trim() || isLoading}
+          disabled={!search.trim() || isLoading || !spriteUrl}
         />
       </div>
     </div>

@@ -43,9 +43,7 @@ const BuildCard: FC<BuildCardProps> = ({ build, onClick }) => {
       {/* Nature + Item */}
       <div className="flex flex-col gap-0.5 mt-auto">
         <span className="text-white/40 text-xs">Nature: {build.nature}</span>
-        <span className="text-white/40 text-xs">
-          Item: {build.item || "—"}
-        </span>
+        <span className="text-white/40 text-xs">Item: {build.item || "—"}</span>
       </div>
 
       {/* Sprite */}
@@ -53,7 +51,7 @@ const BuildCard: FC<BuildCardProps> = ({ build, onClick }) => {
         <img
           src={sprite}
           alt={build.species?.name}
-          className="absolute bottom-0 right-0 w-24 h-24 object-contain translate-y-2 translate-x-1 opacity-90 group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+          className="absolute bottom-0 right-0 w-36 h-36 object-contain translate-y-2 translate-x-1 opacity-90 group-hover:scale-110 transition-transform duration-300 pointer-events-none"
         />
       )}
     </div>

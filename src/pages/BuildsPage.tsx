@@ -3,8 +3,9 @@ import { useGameStore } from "../store/gameStore";
 import Button from "../components/atoms/Button";
 import BuildCard from "../components/molecules/BuildCard";
 import Modal from "../components/molecules/Modal";
+import Dialog from "../components/molecules/Dialog";
 import BuildManager from "../components/organisms/BuildManager";
-import { HiPlus } from "react-icons/hi2";
+import { HiOutlineTrash, HiPlus } from "react-icons/hi2";
 import SearchPokemon from "../components/organisms/SearchPokemon";
 
 const BuildsPage = () => {
@@ -15,6 +16,7 @@ const BuildsPage = () => {
   const [buildManagerOpen, setBuildManagerOpen] = useState(false);
   const [pendingSpecies, setPendingSpecies] = useState("");
   const [editingBuild, setEditingBuild] = useState<PokemonBuild | undefined>();
+  const [deletingBuildId, setDeletingBuildId] = useState<string | null>(null);
 
   // Group builds by species name
   const grouped = builds.reduce<Record<string, PokemonBuild[]>>(
@@ -55,8 +57,7 @@ const BuildsPage = () => {
               Active Builds
             </h1>
             <span className="text-xs text-white/30 font-semibold uppercase tracking-[0.2em]">
-              Library — {builds.length}{" "}
-              {builds.length === 1 ? "entry" : "entries"}
+              — {builds.length} {builds.length === 1 ? "entry" : "entries"}
             </span>
           </div>
         </div>
@@ -91,7 +92,7 @@ const BuildsPage = () => {
               </div>
 
               {/* Build cards grid */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 {speciesBuilds.map((build) => (
                   <div key={build.id} className="relative group/card">
                     <BuildCard
@@ -102,11 +103,11 @@ const BuildsPage = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        deleteBuild(build.id);
+                        setDeletingBuildId(build.id);
                       }}
                       className="absolute top-3 right-3 p-1.5 rounded-lg text-white/20 hover:text-[#b22200] hover:bg-[#b22200]/10 transition-colors opacity-0 group-hover/card:opacity-100 cursor-pointer"
                     >
-                      ✕
+                      <HiOutlineTrash size={15} />
                     </button>
                   </div>
                 ))}
@@ -128,6 +129,17 @@ const BuildsPage = () => {
           onConfirm={handleConfirmSpecies}
         />
       </Modal>
+
+      {/* Delete Build Dialog */}
+      <Dialog
+        isOpen={deletingBuildId !== null}
+        question="Delete this build? This action cannot be undone."
+        onCancel={() => setDeletingBuildId(null)}
+        onConfirm={() => {
+          if (deletingBuildId) deleteBuild(deletingBuildId);
+          setDeletingBuildId(null);
+        }}
+      />
 
       {/* Build Manager Modal */}
       {pendingSpecies && (

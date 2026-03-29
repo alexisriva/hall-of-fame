@@ -8,6 +8,7 @@ import RosterSection from "../components/organisms/RosterSection";
 import SubsectionCard from "../components/organisms/SubsectionCard";
 import AnalysisCard from "../components/molecules/AnalysisCard";
 import Modal from "../components/molecules/Modal";
+import Dialog from "../components/molecules/Dialog";
 import MatchLeadForm from "../components/molecules/MatchLeadForm";
 import MatchCounterForm from "../components/molecules/MatchCounterForm";
 import Button from "../components/atoms/Button";
@@ -26,6 +27,8 @@ const JournalPage: FC<Props> = ({ team }) => {
   const [counterModalOpen, setCounterModalOpen] = useState(false);
   const [editingLeadIdx, setEditingLeadIdx] = useState<number | null>(null);
   const [editingCounterIdx, setEditingCounterIdx] = useState<number | null>(null);
+  const [deletingLeadIdx, setDeletingLeadIdx] = useState<number | null>(null);
+  const [deletingCounterIdx, setDeletingCounterIdx] = useState<number | null>(null);
 
   const closeLeadModal = () => {
     setLeadModalOpen(false);
@@ -103,7 +106,7 @@ const JournalPage: FC<Props> = ({ team }) => {
               )
             }
             onEdit={() => { setEditingLeadIdx(i); setLeadModalOpen(true); }}
-            onDelete={() => handleDeleteLead(i)}
+            onDelete={() => setDeletingLeadIdx(i)}
           />
         ))}
       </SubsectionCard>
@@ -132,7 +135,7 @@ const JournalPage: FC<Props> = ({ team }) => {
               )
             }
             onEdit={() => { setEditingCounterIdx(i); setCounterModalOpen(true); }}
-            onDelete={() => handleDeleteCounter(i)}
+            onDelete={() => setDeletingCounterIdx(i)}
           />
         ))}
       </SubsectionCard>
@@ -160,6 +163,28 @@ const JournalPage: FC<Props> = ({ team }) => {
           initialNotes={editingLeadIdx !== null ? leads[editingLeadIdx].notes : undefined}
         />
       </Modal>
+
+      {/* Delete Lead Dialog */}
+      <Dialog
+        isOpen={deletingLeadIdx !== null}
+        question="Delete this strategic lead? This action cannot be undone."
+        onCancel={() => setDeletingLeadIdx(null)}
+        onConfirm={() => {
+          if (deletingLeadIdx !== null) handleDeleteLead(deletingLeadIdx);
+          setDeletingLeadIdx(null);
+        }}
+      />
+
+      {/* Delete Counter Dialog */}
+      <Dialog
+        isOpen={deletingCounterIdx !== null}
+        question="Delete this critical threat? This action cannot be undone."
+        onCancel={() => setDeletingCounterIdx(null)}
+        onConfirm={() => {
+          if (deletingCounterIdx !== null) handleDeleteCounter(deletingCounterIdx);
+          setDeletingCounterIdx(null);
+        }}
+      />
 
       {/* Counter Modal */}
       <Modal
