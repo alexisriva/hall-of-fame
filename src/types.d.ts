@@ -92,13 +92,6 @@ type PokemonBuild = {
   teraType?: string;
 };
 
-type Pokemon = {
-  id: string; // uuid
-  species: string; // e.g. "gengar" - used to fetch API data
-  activeBuildId: string | null; // ID of the currently "Equipped" build
-  savedBuilds: PokemonBuild[];
-};
-
 type PokemonTeam = {
   id: string;
   regulation: string;
