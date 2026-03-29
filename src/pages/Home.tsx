@@ -28,7 +28,7 @@ const Home: FC = () => {
             </h2>
             <button
               onClick={() => setIsAdding(true)}
-              className="px-6 py-2 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 rounded-lg text-sm font-bold uppercase tracking-wider transition-all cursor-pointer shadow-lg hover:shadow-amber-500/20 transform hover:-translate-y-0.5"
+              className="px-6 py-2 bg-linear-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 rounded-lg text-sm font-bold uppercase tracking-wider transition-all cursor-pointer shadow-lg hover:shadow-amber-500/20 transform hover:-translate-y-0.5"
             >
               + Add Member
             </button>
