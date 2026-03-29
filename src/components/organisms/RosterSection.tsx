@@ -89,7 +89,9 @@ const RosterSection: FC<RosterSectionProps> = ({
         toImport.map(async (block) => {
           const firstLine = block.split("\n")[0].trim();
           const species = extractSpeciesFromLine(firstLine);
-          const apiData = await queryClient.ensureQueryData(pokemonQueryOptions(species));
+          const apiData = await queryClient.ensureQueryData(
+            pokemonQueryOptions(species),
+          );
           const parsed = parsePokepaste(block);
 
           const spriteUrl = parsed.isShiny
@@ -172,6 +174,7 @@ const RosterSection: FC<RosterSectionProps> = ({
             name={m.name}
             imageUrl={m.species?.sprite ?? ""}
             types={m.species?.types}
+            teraType={m.teraType}
             onClick={onRemove ? () => onRemove(m.id) : undefined}
           />
         ))}

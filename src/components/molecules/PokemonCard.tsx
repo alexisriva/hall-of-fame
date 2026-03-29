@@ -10,6 +10,7 @@ interface PokemonCardProps {
   name: string;
   imageUrl: string;
   types?: string[];
+  teraType?: string;
   onClick?: () => void;
 }
 
@@ -17,6 +18,7 @@ const PokemonCard: FC<PokemonCardProps> = ({
   name,
   imageUrl,
   types = [],
+  teraType,
   onClick,
 }) => (
   <div
@@ -47,13 +49,11 @@ const PokemonCard: FC<PokemonCardProps> = ({
         {name}
       </span>
 
-      {types.length > 0 && (
-        <div className="flex items-center gap-1.5">
-          {types.map((type) => (
-            <TypeIcon key={type} type={type} size={20} />
-          ))}
-        </div>
-      )}
+      <div className="flex items-center gap-1.5">
+        {types.length > 0 &&
+          types.map((type) => <TypeIcon key={type} type={type} />)}
+        {teraType && <TypeIcon type={teraType} size={30} tera />}
+      </div>
     </div>
   </div>
 );
