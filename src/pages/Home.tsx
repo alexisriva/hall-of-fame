@@ -2,7 +2,7 @@ import { useState, type FC } from "react";
 import Header from "../components/Header";
 import TeamGrid from "../components/TeamGrid";
 import PcGrid from "../components/PcGrid";
-import AddPokemonModal from "../components/AddPokemonModal";
+import AddPokemonModal from "../components/organisms/SearchPokemon";
 import { useGameStore } from "../store/gameStore";
 
 const Home: FC = () => {
