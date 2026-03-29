@@ -1,3 +1,25 @@
+const GENDER_TERMS = new Set(["m", "f", "male", "female"]);
+
+export function extractSpeciesFromLine(line: string): string {
+  const atIdx = line.lastIndexOf(" @ ");
+  const namePart = atIdx !== -1 ? line.slice(0, atIdx).trim() : line.trim();
+
+  const parenMatches = [...namePart.matchAll(/\(([^)]+)\)/g)];
+  const speciesParens = parenMatches.filter(
+    (m) => !GENDER_TERMS.has(m[1].trim().toLowerCase()),
+  );
+
+  if (speciesParens.length > 0) {
+    return speciesParens[speciesParens.length - 1][1].trim().toLowerCase();
+  }
+
+  // No species parens — strip any gender parens and use the remaining text
+  const beforeParen = namePart.includes("(")
+    ? namePart.slice(0, namePart.indexOf("(")).trim()
+    : namePart;
+  return beforeParen.toLowerCase();
+}
+
 const evKeyMap: Record<string, keyof Stats> = {
   HP: "hp",
   Atk: "atk",

@@ -110,6 +110,9 @@ const JournalPage = () => {
         onAdd={(buildId) =>
           updateTeam(team.id, { pokemon: [...team.pokemon, buildId] })
         }
+        onAddMultiple={(buildIds) =>
+          updateTeam(team.id, { pokemon: [...team.pokemon, ...buildIds] })
+        }
         onRemove={(buildId) =>
           updateTeam(team.id, {
             pokemon: team.pokemon.filter((id) => id !== buildId),

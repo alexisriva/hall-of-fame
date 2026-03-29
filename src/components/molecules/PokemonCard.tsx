@@ -1,15 +1,6 @@
 import type { FC } from "react";
+import TypeIcon from "../atoms/TypeIcon";
 import { TYPES } from "../../utils/constants";
-
-// Eagerly import all type icons so Vite can bundle them correctly
-const TYPE_ICONS: Record<string, string> = import.meta.glob(
-  "../../assets/types/*.png",
-  { eager: true, import: "default" },
-) as Record<string, string>;
-
-function getTypeIcon(type: string): string | undefined {
-  return TYPE_ICONS[`../../assets/types/${type.toLowerCase()}.png`];
-}
 
 function getTypeBg(type: string): string {
   return TYPES[type.toLowerCase() as keyof typeof TYPES] ?? "#1a1210";
@@ -58,18 +49,9 @@ const PokemonCard: FC<PokemonCardProps> = ({
 
       {types.length > 0 && (
         <div className="flex items-center gap-1.5">
-          {types.map((type) => {
-            const icon = getTypeIcon(type);
-            return icon ? (
-              <img
-                key={type}
-                src={icon}
-                alt={type}
-                title={type}
-                className="w-5 h-5 object-contain"
-              />
-            ) : null;
-          })}
+          {types.map((type) => (
+            <TypeIcon key={type} type={type} size={20} />
+          ))}
         </div>
       )}
     </div>
