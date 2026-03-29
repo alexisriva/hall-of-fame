@@ -194,9 +194,9 @@ const BuildManager: FC<BuildManagerProps> = ({
       {tab === "build" && (
         <>
           {/* Body: Item/Ability/Nature + Moves */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-6">
             {/* Left: Item, Ability, Nature */}
-            <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4">
               <div className="flex flex-col gap-1.5">
                 <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
                   Held Item
@@ -293,7 +293,7 @@ const BuildManager: FC<BuildManagerProps> = ({
               <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
                 Moveset
               </span>
-              <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {localBuild.moves.map((move, i) => (
                   <MoveAutocomplete
                     key={i}

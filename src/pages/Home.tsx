@@ -44,7 +44,7 @@ const Home: FC = () => {
           Hall of Fame
         </h1>
         <p className="text-white/30 text-sm">
-          The 6 most-used Pokémon across all your teams, one per species.
+          The 6 most-used Pokémon across all your teams.
           {totalTeams > 0 && (
             <span className="ml-1 text-white/20">
               ({totalTeams} team{totalTeams !== 1 ? "s" : ""} recorded)
@@ -60,8 +60,8 @@ const Home: FC = () => {
             No hall of fame yet.
           </p>
           <p className="text-white/20 text-sm max-w-xs">
-            Add Pokémon builds to your teams in the Team Hub to see them
-            ranked here.
+            Add Pokémon builds to your teams in the Team Hub to see them ranked
+            here.
           </p>
         </div>
       ) : (
