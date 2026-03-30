@@ -81,6 +81,7 @@ type PokemonBuild = {
     name: string;
     sprite: string;
     types: string[];
+    baseStats: Stats;
   };
   isShiny: boolean;
   item: string;

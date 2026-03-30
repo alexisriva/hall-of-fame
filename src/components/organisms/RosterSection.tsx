@@ -14,6 +14,7 @@ import {
   extractSpeciesFromLine,
 } from "../../utils/parsePokepaste";
 import { pokemonQueryOptions } from "../../hooks/usePokemonData";
+import { reduceStats } from "../../utils/statsReducer";
 
 interface RosterSectionProps {
   memberIds: string[];
@@ -117,6 +118,7 @@ const RosterSection: FC<RosterSectionProps> = ({
               types: apiData.types.map(
                 (t: { type: { name: string } }) => t.type.name,
               ),
+              baseStats: reduceStats(apiData),
             },
           };
 

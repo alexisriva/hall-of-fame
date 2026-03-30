@@ -10,6 +10,7 @@ import StatsViewer from "../molecules/StatsViewer";
 import { NATURES, STATS, TYPES } from "../../utils/constants";
 import { capitalize } from "../../utils/helpers";
 import { parsePokepaste } from "../../utils/parsePokepaste";
+import { reduceStats } from "../../utils/statsReducer";
 
 const selectCls =
   "w-full rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 appearance-none cursor-pointer transition-all";
@@ -38,25 +39,7 @@ const BuildManager: FC<BuildManagerProps> = ({
   const [pasteText, setPasteText] = useState("");
   const [parseError, setParseError] = useState("");
 
-  const API_STAT_MAP: Record<string, keyof Stats> = {
-    hp: "hp",
-    attack: "atk",
-    defense: "def",
-    "special-attack": "spa",
-    "special-defense": "spd",
-    speed: "spe",
-  };
-
-  const baseStats: Stats = data
-    ? data.stats.reduce(
-        (acc, s) => {
-          const key = API_STAT_MAP[s.stat.name];
-          if (key) acc[key] = s.base_stat;
-          return acc;
-        },
-        { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } as Stats,
-      )
-    : { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 };
+  const baseStats: Stats = reduceStats(data);
 
   const spriteUrl = localBuild.isShiny
     ? data?.sprites.other?.["official-artwork"]?.front_shiny ||
@@ -127,6 +110,7 @@ const BuildManager: FC<BuildManagerProps> = ({
         name: species.toLowerCase(),
         sprite: spriteUrl || "",
         types: data.types.map((t) => t.type.name),
+        baseStats: baseStats,
       },
     };
     if (initialBuild) {

@@ -1,6 +1,6 @@
 import type { FC } from "react";
+import HallOfFamePokemonCard from "../components/molecules/HallOfFamePokemonCard";
 import { useGameStore } from "../store/gameStore";
-import TypeIcon from "../components/atoms/TypeIcon";
 
 const Home: FC = () => {
   const builds = useGameStore((s) => s.builds);
@@ -66,65 +66,14 @@ const Home: FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
-          {hallOfFame.map(({ build, count }) => {
-            const usagePct =
-              totalTeams > 0 ? Math.round((count / totalTeams) * 100) : 0;
-            const types = build.species?.types ?? [];
-            const sprite = build.species?.sprite;
-
-            return (
-              <div
-                key={build.id}
-                className="relative overflow-hidden rounded-2xl bg-[#161C29] px-5 pt-5 pb-4 flex flex-col gap-3 min-h-[200px]"
-                style={{ boxShadow: "0 12px 40px rgba(42, 55, 94, 0.08)" }}
-              >
-                {/* Sprite top-left */}
-                {sprite && (
-                  <img
-                    src={sprite}
-                    alt={build.species?.name}
-                    className="w-20 h-20 object-contain pointer-events-none -mt-1 -ml-1"
-                  />
-                )}
-
-                {/* Build name + species */}
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-white font-bold text-base leading-tight">
-                    {build.name}
-                  </span>
-                  <span className="text-white/30 text-xs capitalize">
-                    {build.species?.name ?? "—"}
-                  </span>
-                </div>
-
-                {/* Type icons */}
-                {types.length > 0 && (
-                  <div className="flex items-center gap-1.5">
-                    {types.map((type) => (
-                      <TypeIcon key={type} type={type} />
-                    ))}
-                    {build.teraType && (
-                      <TypeIcon type={build.teraType} size={28} tera />
-                    )}
-                  </div>
-                )}
-
-                {/* Nature + Item */}
-                <div className="flex flex-col gap-0.5 mt-auto">
-                  <span className="text-white/30 text-xs">
-                    {build.nature} · {build.item || "No item"}
-                  </span>
-                </div>
-
-                {/* Usage pill */}
-                <div className="flex">
-                  <span className="bg-[#b22200]/20 text-[#b22200] text-xs font-semibold px-2.5 py-0.5 rounded-full tabular-nums">
-                    {usagePct}% · {count}/{totalTeams} teams
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+          {hallOfFame.map(({ build, count }) => (
+            <HallOfFamePokemonCard
+              key={build.id}
+              build={build}
+              count={count}
+              totalTeams={totalTeams}
+            />
+          ))}
         </div>
       )}
     </div>
