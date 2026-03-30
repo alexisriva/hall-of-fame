@@ -20,11 +20,11 @@ const Modal: FC<ModalProps> = ({ isOpen, title, onClose, children, size = "md" }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/70 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className={`relative w-full ${sizeClasses[size]} max-h-[90vh] overflow-y-auto rounded-2xl bg-[#10141E] p-6 flex flex-col gap-5 shadow-[0_24px_60px_rgba(0,0,0,0.5)]`}
+        className={`relative w-full ${sizeClasses[size]} max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-[#10141E] p-5 sm:p-6 flex flex-col gap-5 shadow-[0_24px_60px_rgba(0,0,0,0.5)]`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

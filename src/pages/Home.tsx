@@ -37,10 +37,10 @@ const Home: FC = () => {
   const isEmpty = hallOfFame.length === 0;
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6 py-10 flex flex-col gap-10">
+    <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-6 md:py-10 flex flex-col gap-6 md:gap-10">
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-white font-bold text-3xl tracking-tight">
+        <h1 className="text-white font-bold text-2xl md:text-3xl tracking-tight">
           Hall of Fame
         </h1>
         <p className="text-white/30 text-sm">

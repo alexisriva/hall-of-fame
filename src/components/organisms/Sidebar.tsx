@@ -36,7 +36,7 @@ const Sidebar: FC = () => {
   return (
     <aside
       className={[
-        "shrink-0 h-screen flex flex-col gap-8 py-8 px-3 bg-[#0A0C10] transition-all duration-200",
+        "hidden md:flex shrink-0 h-screen flex-col gap-8 py-8 px-3 bg-[#0A0C10] transition-all duration-200",
         collapsed ? "w-16" : "w-48",
       ].join(" ")}
     >

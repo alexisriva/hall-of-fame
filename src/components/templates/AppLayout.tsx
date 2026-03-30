@@ -1,9 +1,11 @@
 import type { FC } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../organisms/Sidebar";
+import TopNav from "../organisms/TopNav";
 
 const AppLayout: FC = () => (
-  <div className="flex h-screen overflow-hidden text-white bg-[#0F1115]">
+  <div className="flex flex-col md:flex-row h-screen overflow-hidden text-white bg-[#0F1115]">
+    <TopNav />
     <Sidebar />
     <main className="flex-1 overflow-y-auto flex flex-col">
       <div className="flex-1">
