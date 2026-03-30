@@ -12,7 +12,12 @@ interface MatchCounterFormProps {
 const EMPTY_BUILD = (): PokemonBuild => ({
   id: crypto.randomUUID(),
   name: "",
-  species: { name: "", sprite: "", types: [] },
+  species: {
+    name: "",
+    sprite: "",
+    types: [],
+    baseStats: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
+  },
   isShiny: false,
   item: "",
   ability: "",
@@ -40,6 +45,7 @@ const MatchCounterForm: FC<MatchCounterFormProps> = ({
         name: speciesName.trim().toLowerCase(),
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${speciesName.trim().toLowerCase()}.png`,
         types: [],
+        baseStats: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
       },
     };
     onSubmit({ pokemon, notes });
