@@ -25,6 +25,17 @@ const JournalPage = () => {
   const updateTeam = useGameStore((s) => s.updateTeam);
   const team = teams.find((t) => t.id === id);
 
+  const [leads, setLeads] = useState<MatchLead[]>(team?.leads || []);
+  const [counters, setCounters] = useState<MatchCounter[]>(team?.counters || []);
+  const [insights, setInsights] = useState(team?.additionalInsights || "");
+
+  const [leadModalOpen, setLeadModalOpen] = useState(false);
+  const [counterModalOpen, setCounterModalOpen] = useState(false);
+  const [editingLeadIdx, setEditingLeadIdx] = useState<number | null>(null);
+  const [editingCounterIdx, setEditingCounterIdx] = useState<number | null>(null);
+  const [deletingLeadIdx, setDeletingLeadIdx] = useState<number | null>(null);
+  const [deletingCounterIdx, setDeletingCounterIdx] = useState<number | null>(null);
+
   if (!team) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-3">
@@ -33,16 +44,6 @@ const JournalPage = () => {
       </div>
     );
   }
-  const [leads, setLeads] = useState<MatchLead[]>(team.leads);
-  const [counters, setCounters] = useState<MatchCounter[]>(team.counters);
-  const [insights, setInsights] = useState(team.additionalInsights);
-
-  const [leadModalOpen, setLeadModalOpen] = useState(false);
-  const [counterModalOpen, setCounterModalOpen] = useState(false);
-  const [editingLeadIdx, setEditingLeadIdx] = useState<number | null>(null);
-  const [editingCounterIdx, setEditingCounterIdx] = useState<number | null>(null);
-  const [deletingLeadIdx, setDeletingLeadIdx] = useState<number | null>(null);
-  const [deletingCounterIdx, setDeletingCounterIdx] = useState<number | null>(null);
 
   const closeLeadModal = () => {
     setLeadModalOpen(false);
