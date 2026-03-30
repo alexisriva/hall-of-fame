@@ -8,7 +8,7 @@ import {
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import { SlTrophy } from "react-icons/sl";
 import Tile from "../molecules/Tile";
-import logo from "../../assets/logo.svg";
+import logo from "../../assets/logo.png";
 
 const NAV_ITEMS = [
   {

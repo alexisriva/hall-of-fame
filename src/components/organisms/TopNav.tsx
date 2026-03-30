@@ -7,7 +7,7 @@ import {
 } from "react-icons/hi2";
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import { SlTrophy } from "react-icons/sl";
-import logo from "../../assets/logo.svg";
+import logo from "../../assets/logo.png";
 
 const NAV_ITEMS = [
   { label: "Home", icon: <SlTrophy size={18} />, path: "/" },
@@ -54,10 +54,7 @@ const TopNav: FC = () => {
       {/* Dropdown */}
       {open && (
         <>
-          <div
-            className="fixed inset-0 z-30"
-            onClick={() => setOpen(false)}
-          />
+          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
           <div className="absolute top-full left-0 right-0 z-40 bg-[#0A0C10] border-t border-white/5 px-3 py-2 flex flex-col gap-0.5 shadow-lg">
             {NAV_ITEMS.map(({ label, icon, path }) => (
               <button
