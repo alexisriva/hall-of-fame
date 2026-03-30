@@ -77,6 +77,12 @@ type Nature =
 type PokemonBuild = {
   id: string; // unique build ID
   name: string; // build name (e.g. "Sweeper")
+  species?: {
+    name: string;
+    sprite: string;
+    types: string[];
+    baseStats: Stats;
+  };
   isShiny: boolean;
   item: string;
   ability: string;
@@ -84,11 +90,28 @@ type PokemonBuild = {
   moves: [string, string, string, string];
   evs: Stats;
   ivs: Stats;
+  teraType?: string;
 };
 
-type Pokemon = {
-  id: string; // uuid
-  species: string; // e.g. "gengar" - used to fetch API data
-  activeBuildId: string | null; // ID of the currently "Equipped" build
-  savedBuilds: PokemonBuild[];
+type PokemonTeam = {
+  id: string;
+  regulation: string;
+  name: string;
+  /** Array of PokemonBuild IDs — resolve against the store's `builds` array */
+  pokemon: string[];
+  leads: MatchLead[];
+  counters: MatchCounter[];
+  additionalInsights: string;
+  wins: number;
+  losses: number;
+};
+
+type MatchLead = {
+  pokemon: PokemonBuild[];
+  notes: string;
+};
+
+type MatchCounter = {
+  pokemon: PokemonBuild;
+  notes: string;
 };

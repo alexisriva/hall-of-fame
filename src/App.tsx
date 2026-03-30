@@ -1,20 +1,27 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import AppLayout from "./components/templates/AppLayout";
 import Home from "./pages/Home";
-import BuildManager from "./pages/BuildManager";
+import BuildsPage from "./pages/BuildsPage";
+import TeamHubPage from "./pages/TeamHubPage";
+import JournalPage from "./pages/JournalPage";
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen text-white">
-        <Routes>
+      <Routes>
+        <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/builds/:id" element={<BuildManager />} />
+          <Route path="/builds" element={<BuildsPage />} />
+          <Route path="/team-hub" element={<TeamHubPage />} />
+          <Route path="/team-hub/:id" element={<JournalPage />} />
           <Route
             path="*"
-            element={<div className="p-10 text-center">404 Not Found</div>}
+            element={
+              <div className="p-10 text-center text-white">404 Not Found</div>
+            }
           />
-        </Routes>
-      </div>
+        </Route>
+      </Routes>
     </Router>
   );
 }

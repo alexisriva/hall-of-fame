@@ -10,10 +10,14 @@ const fetchPokemon = async (name: string): Promise<PokemonApiData> => {
   return response.json();
 };
 
+export const pokemonQueryOptions = (name: string) => ({
+  queryKey: ["pokemon", name.toLowerCase()] as const,
+  queryFn: () => fetchPokemon(name),
+});
+
 export const usePokemonData = (name: string) => {
   return useQuery({
-    queryKey: ["pokemon", name.toLowerCase()],
-    queryFn: () => fetchPokemon(name),
+    ...pokemonQueryOptions(name),
     enabled: !!name,
   });
 };
