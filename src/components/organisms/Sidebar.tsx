@@ -8,7 +8,7 @@ import {
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import { SlTrophy } from "react-icons/sl";
 import Tile from "../molecules/Tile";
-import logo from "../../assets/logo.png";
+import pokeball from "../../assets/pokeball.png";
 
 const NAV_ITEMS = [
   {
@@ -43,7 +43,6 @@ const Sidebar: FC = () => {
       {/* Brand */}
       <div className="px-1 flex flex-col gap-1 overflow-hidden">
         <div className="flex items-center gap-2">
-          <img src={logo} width={36} alt="Logo" className="shrink-0" />
           <p
             className="text-white/80 font-semibold tracking-wide leading-tight transition-opacity duration-100 whitespace-nowrap"
             style={{
@@ -55,12 +54,13 @@ const Sidebar: FC = () => {
           </p>
         </div>
         <p
-          className="text-white/25 text-xs mt-0.5 transition-opacity duration-100 whitespace-nowrap"
+          className="flex gap-0.5 items-center text-white/25 text-xs mt-0.5 transition-opacity duration-100 whitespace-nowrap"
           style={{
             opacity: collapsed ? 0 : 1,
             transitionDelay: collapsed ? "0ms" : "150ms",
           }}
         >
+          <img src={pokeball} width={18} alt="Logo" className="shrink-0" />
           Kanto v1.1
         </p>
       </div>

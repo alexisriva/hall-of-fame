@@ -3,6 +3,7 @@ import HallOfFamePokemonCard from "../components/molecules/HallOfFamePokemonCard
 import Loading from "../components/atoms/Loading";
 import { useGameStore } from "../store/gameStore";
 import { useRandomHallOfFame } from "../hooks/useRandomHallOfFame";
+import logo from "../assets/logo.png";
 
 const Home: FC = () => {
   const builds = useGameStore((s) => s.builds);
@@ -44,9 +45,12 @@ const Home: FC = () => {
     <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-6 md:py-10 flex flex-col gap-6 md:gap-10">
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-white font-bold text-2xl md:text-3xl tracking-tight">
-          Hall of Fame
-        </h1>
+        <div className="flex items-center gap-2">
+          <img src={logo} width={36} alt="Logo" className="shrink-0" />
+          <h1 className="text-white font-bold text-2xl md:text-3xl tracking-tight">
+            Hall of Fame
+          </h1>
+        </div>
         <p className="text-white/30 text-sm">
           The 6 most-used Pokémon across all your teams.
           {totalTeams > 0 && (
