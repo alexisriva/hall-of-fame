@@ -1,6 +1,8 @@
 import type { FC } from "react";
 import HallOfFamePokemonCard from "../components/molecules/HallOfFamePokemonCard";
+import Loading from "../components/atoms/Loading";
 import { useGameStore } from "../store/gameStore";
+import { useRandomHallOfFame } from "../hooks/useRandomHallOfFame";
 
 const Home: FC = () => {
   const builds = useGameStore((s) => s.builds);
@@ -34,7 +36,9 @@ const Home: FC = () => {
     .sort((a, b) => b.count - a.count)
     .slice(0, 6);
 
-  const isEmpty = hallOfFame.length === 0;
+  const isNewUser = teams.length === 0;
+  const { builds: randomBuilds, isLoading: randomLoading } =
+    useRandomHallOfFame(isNewUser);
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-6 md:py-10 flex flex-col gap-6 md:gap-10">
@@ -54,7 +58,25 @@ const Home: FC = () => {
       </div>
 
       {/* Grid */}
-      {isEmpty ? (
+      {isNewUser ? (
+        <div className="flex flex-col gap-4">
+          {randomLoading ? (
+            <div className="flex items-center justify-center py-24">
+              <Loading size="md" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+              {randomBuilds.map((build) => (
+                <HallOfFamePokemonCard key={build.id} build={build} />
+              ))}
+            </div>
+          )}
+          <p className="text-white text-xs text-center">
+            This is a randomized Hall of Fame. It will be replaced once you
+            start logging your own teams.
+          </p>
+        </div>
+      ) : hallOfFame.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-white/10 py-24 text-center">
           <p className="text-white/30 font-semibold text-base">
             No hall of fame yet.

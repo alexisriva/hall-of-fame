@@ -4,8 +4,8 @@ import StatsViewer from "./StatsViewer";
 
 interface HallOfFamePokemonCardProps {
   build: PokemonBuild;
-  count: number;
-  totalTeams: number;
+  count?: number;
+  totalTeams?: number;
 }
 
 const HallOfFamePokemonCard: FC<HallOfFamePokemonCardProps> = ({
@@ -13,7 +13,10 @@ const HallOfFamePokemonCard: FC<HallOfFamePokemonCardProps> = ({
   count,
   totalTeams,
 }) => {
-  const usagePct = totalTeams > 0 ? Math.round((count / totalTeams) * 100) : 0;
+  const usagePct =
+    count !== undefined && totalTeams && totalTeams > 0
+      ? Math.round((count / totalTeams) * 100)
+      : null;
   const types = build.species?.types ?? [];
   const sprite = build.species?.sprite;
 
@@ -72,11 +75,13 @@ const HallOfFamePokemonCard: FC<HallOfFamePokemonCardProps> = ({
       )}
 
       {/* Usage pill */}
-      <div className="flex">
-        <span className="bg-[#b22200]/20 text-[#b22200] text-xs font-semibold px-2.5 py-0.5 rounded-full tabular-nums">
-          {usagePct}% · {count}/{totalTeams} teams
-        </span>
-      </div>
+      {usagePct !== null && (
+        <div className="flex">
+          <span className="bg-[#b22200]/20 text-[#b22200] text-xs font-semibold px-2.5 py-0.5 rounded-full tabular-nums">
+            {usagePct}% · {count}/{totalTeams} teams
+          </span>
+        </div>
+      )}
     </div>
   );
 };
