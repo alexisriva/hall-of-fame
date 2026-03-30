@@ -43,6 +43,7 @@ const Sidebar: FC = () => {
       {/* Brand */}
       <div className="px-1 flex flex-col gap-1 overflow-hidden">
         <div className="flex items-center gap-2">
+          {collapsed && <img src={pokeball} width={36} alt="Logo" />}
           <p
             className="text-white/80 font-semibold tracking-wide leading-tight transition-opacity duration-100 whitespace-nowrap"
             style={{

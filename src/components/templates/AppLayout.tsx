@@ -33,7 +33,7 @@ const AppLayout: FC = () => (
             />
           </a>
           <a
-            href="https://github.com/alexisriva"
+            href="https://github.com/alexisriva/hall-of-fame"
             target="_blank"
             rel="noopener noreferrer"
             className="text-neutral-400 hover:text-white hover:scale-110 transition-colors text-sm font-medium uppercase tracking-wider flex items-center gap-2 cursor-pointer"

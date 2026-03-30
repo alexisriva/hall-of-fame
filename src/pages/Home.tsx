@@ -46,7 +46,7 @@ const Home: FC = () => {
       {/* Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <img src={logo} width={36} alt="Logo" className="shrink-0" />
+          <img src={logo} width={36} alt="Logo" className="hidden md:block" />
           <h1 className="text-white font-bold text-2xl md:text-3xl tracking-tight">
             Hall of Fame
           </h1>
