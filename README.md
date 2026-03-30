@@ -1,71 +1,52 @@
-# 🏆 Hall of Fame
+# Hall of Fame
 
-A premium, interactive portfolio component for showcasing your elite Pokémon team. Built with React, TypeScript, and Tailwind CSS, featuring real-time data persistence via Firebase and dynamic data fetching from PokéAPI.
+A competitive Pokémon VGC team management app. Track your builds, organize your teams, log strategic insights, and surface your most-used Pokémon across all your rosters.
 
-![Hall of Fame Screenshot](public/logo.png)
+## Features
 
-## ✨ Features
+- **Hall of Fame** — ranks your most-used Pokémon across all teams by usage percentage
+- **Team Hub** — create and manage multiple teams, each with a roster of up to 6 Pokémon
+- **Builds** — define detailed competitive builds (EVs, IVs, nature, item, moves) per Pokémon species, powered by PokéAPI
+- **Journal** — per-team strategic log: record match leads, critical threats, and additional insights
+- **Collapsible sidebar** on desktop, **dropdown top nav** on mobile
 
-- **Local Team Hub**: A stunning, glassmorphic display of your current "Hall of Fame" team.
-- **Battle Build Library**: Create and save multiple competitive builds (EVs, IVs, Natures) for each team member.
-- **Live Preview Editor**: Real-time sprite preview as you draft your team.
-- **Rich Data**: Displays type, sprites, and base stats (HP, ATK, DEF, SPA, SPD, SPE).
-- **Optimized Performance**: Uses **TanStack Query** for aggressive caching of API data.
-- **Persistence**: **Zustand** + **Local Storage** ensures your team data is saved across sessions.
-- **Responsive Design**: Fully responsive layout that looks great on mobile and desktop.
-- **"Champion" Aesthetic**: Custom Gold & Royal Blue theme with high-quality animations.
+## Tech Stack
 
-## 🛠️ Tech Stack
+- **Framework**: React + TypeScript (Vite)
+- **Styling**: Tailwind CSS v4
+- **State / Persistence**: Zustand with localStorage middleware
+- **Routing**: React Router v6
+- **Species data**: PokéAPI (search + base stats)
+- **Component architecture**: Atomic design (atoms → molecules → organisms → templates)
 
-- **Frontend**: [React](https://react.dev/) (w/ Vite), [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) with [Middleware/Persist](https://docs.pmnd.rs/zustand/integrations/persisting-store-data)
-- **Data Fetching**: [TanStack Query](https://tanstack.com/query/latest) (React Query)
-- **API**: [PokéAPI](https://pokeapi.co/)
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js (v18+)
-
-### Installation
-
-1.  **Clone the repository**
-
-    ```bash
-    git clone https://github.com/yourusername/hall-of-fame.git
-    cd hall-of-fame
-    ```
-
-2.  **Install dependencies**
-
-    ```bash
-    npm install
-    ```
-
-3.  **Run Development Server**
-    ```bash
-    npm run dev
-    ```
-
-## 📂 Project Structure
+## Getting Started
 
 ```bash
-src/
-├── assets/         # Static assets (logos, images)
-├── components/     # Reusable UI components (TeamCard, TeamGrid, etc.)
-├── hooks/          # Custom Hooks (usePokemonData)
-├── pages/          # Page views (Home, BuildManager)
-├── store/          # Zustand store for team persistence
-├── utils/          # Utility functions
-└── main.tsx        # Application entry point
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
 ```
 
-## 🙏 Credits
+Requires Node.js v18+.
 
-- Icons: [Pokemon Type Icons](https://www.deviantart.com/jormxdos/gallery/88740781/pokemon-type-symbols-paldea) & [Pokemon Tera Type Icons](https://www.deviantart.com/jormxdos/gallery/85377027/pokemon-tera-type-symbols-paldea) by [jormxdos](https://www.deviantart.com/jormxdos)
+## Project Structure
 
----
+```
+src/
+├── assets/           # Logo, type icons, tera type icons
+├── components/
+│   ├── atoms/        # Button, TextInput, TextArea, TypeIcon, Slider, Tag, Loading
+│   ├── molecules/    # BuildCard, TeamCard, HallOfFamePokemonCard, StatsViewer, Modal, ...
+│   ├── organisms/    # Sidebar, TopNav, BuildManager, RosterSection, SubsectionCard, SearchPokemon
+│   └── templates/    # AppLayout
+├── pages/            # Home, TeamHubPage, BuildsPage, JournalPage
+├── store/            # Zustand game store
+└── main.tsx
+```
 
-_Gotta catch 'em all!_ 🔴⚪
+## Credits
+
+- Type & Tera type icons by [jormxdos](https://www.deviantart.com/jormxdos)
+- Sprite data from [PokéAPI](https://pokeapi.co/)
