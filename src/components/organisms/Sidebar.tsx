@@ -33,16 +33,17 @@ const Sidebar: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-  const [showCoffee, setShowCoffee] = useState(true);
+  const coffeeEnabled = import.meta.env.VITE_SHOW_COFFEE_BUTTON === "true";
+  const [showCoffee, setShowCoffee] = useState(coffeeEnabled);
 
   useEffect(() => {
-    if (collapsed) {
+    if (!coffeeEnabled || collapsed) {
       setShowCoffee(false);
     } else {
-      const t = setTimeout(() => setShowCoffee(true), 120);
+      const t = setTimeout(() => setShowCoffee(true), 200);
       return () => clearTimeout(t);
     }
-  }, [collapsed]);
+  }, [collapsed, coffeeEnabled]);
 
   return (
     <aside

@@ -4,9 +4,11 @@ import CoffeeButton from "../atoms/CoffeeButton";
 
 const Footer = () => (
   <footer className="flex flex-col items-center gap-3 text-xs py-8 tracking-widest text-white z-10">
-    <div className="md:hidden">
-      <CoffeeButton className="animate-bounce" />
-    </div>
+    {import.meta.env.VITE_SHOW_COFFEE_BUTTON === "true" && (
+      <div className="md:hidden">
+        <CoffeeButton />
+      </div>
+    )}
     <div className="flex justify-center gap-3 items-center">
       <p className="opacity-40">
         Alexis Rivadeneira © {new Date().getFullYear()}
