@@ -1,4 +1,4 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   HiOutlineSquare3Stack3D,
@@ -7,6 +7,7 @@ import {
 } from "react-icons/hi2";
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import { SlTrophy } from "react-icons/sl";
+import CoffeeButton from "../atoms/CoffeeButton";
 import Tile from "../molecules/Tile";
 import pokeball from "../../assets/pokeball.png";
 
@@ -32,6 +33,16 @@ const Sidebar: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [showCoffee, setShowCoffee] = useState(true);
+
+  useEffect(() => {
+    if (collapsed) {
+      setShowCoffee(false);
+    } else {
+      const t = setTimeout(() => setShowCoffee(true), 120);
+      return () => clearTimeout(t);
+    }
+  }, [collapsed]);
 
   return (
     <aside
@@ -58,7 +69,7 @@ const Sidebar: FC = () => {
           className="flex gap-0.5 items-center text-white/25 text-xs mt-0.5 transition-opacity duration-100 whitespace-nowrap"
           style={{
             opacity: collapsed ? 0 : 1,
-            transitionDelay: collapsed ? "0ms" : "150ms",
+            transitionDelay: collapsed ? "0ms" : "120ms",
           }}
         >
           <img src={pokeball} width={18} alt="Logo" className="shrink-0" />
@@ -81,17 +92,20 @@ const Sidebar: FC = () => {
       </nav>
 
       {/* Toggle */}
-      <button
-        onClick={() => setCollapsed((c) => !c)}
-        className={`${collapsed ? "justify-center" : "justify-end pr-3"} mt-auto flex items-center w-full py-2 rounded-xl text-white/30 hover:text-white/60 hover:bg-white/5 transition-all duration-200 cursor-pointer`}
-        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        {collapsed ? (
-          <HiOutlineChevronRight size={16} />
-        ) : (
-          <HiOutlineChevronLeft size={16} />
-        )}
-      </button>
+      <div className="mt-auto flex flex-col gap-3">
+        {showCoffee && <CoffeeButton />}
+        <button
+          onClick={() => setCollapsed((c) => !c)}
+          className={`${collapsed ? "justify-center" : "justify-end pr-3"} flex items-center w-full py-2 rounded-xl text-white/30 hover:text-white/60 hover:bg-white/5 transition-all duration-200 cursor-pointer`}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? (
+            <HiOutlineChevronRight size={16} />
+          ) : (
+            <HiOutlineChevronLeft size={16} />
+          )}
+        </button>
+      </div>
     </aside>
   );
 };
