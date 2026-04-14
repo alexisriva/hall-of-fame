@@ -4,9 +4,11 @@ import {
   HiOutlineBolt,
   HiOutlineExclamationTriangle,
   HiOutlineLightBulb,
+  HiOutlineChartBar,
   HiArrowLongLeft,
 } from "react-icons/hi2";
 import RosterSection from "../components/organisms/RosterSection";
+import WeaknessIndex from "../components/molecules/WeaknessIndex";
 import SubsectionCard from "../components/organisms/SubsectionCard";
 import AnalysisCard from "../components/molecules/AnalysisCard";
 import Modal from "../components/molecules/Modal";
@@ -24,6 +26,9 @@ const JournalPage = () => {
   const builds = useGameStore((s) => s.builds);
   const updateTeam = useGameStore((s) => s.updateTeam);
   const team = teams.find((t) => t.id === id);
+  const roster = (team?.pokemon ?? [])
+    .map((id) => builds.find((b) => b.id === id))
+    .filter(Boolean) as PokemonBuild[];
 
   const [leads, setLeads] = useState<MatchLead[]>(team?.leads || []);
   const [counters, setCounters] = useState<MatchCounter[]>(team?.counters || []);
@@ -120,6 +125,11 @@ const JournalPage = () => {
           })
         }
       />
+
+      {/* Weakness Index */}
+      <SubsectionCard title="Weakness Index" icon={<HiOutlineChartBar />}>
+        <WeaknessIndex members={roster} />
+      </SubsectionCard>
 
       {/* Strategic Leads */}
       <SubsectionCard

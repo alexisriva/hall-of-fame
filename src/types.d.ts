@@ -34,6 +34,9 @@ type PokemonApiData = {
       name: string;
     };
   }[];
+  species: {
+    name: string;
+  };
 };
 
 // -- Local Game Types --
