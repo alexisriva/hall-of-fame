@@ -3,8 +3,7 @@ import { calculateFullSpread } from "../../utils/statsCalc";
 
 interface MiniStatsChartProps {
   baseStats: Stats;
-  evs: Stats;
-  ivs: Stats;
+  sps: Stats;
   nature: Nature;
 }
 
@@ -20,8 +19,8 @@ const pt = (angle: number, r: number) => ({
   y: CY + r * Math.sin(angle),
 });
 
-const MiniStatsChart: FC<MiniStatsChartProps> = ({ baseStats, evs, ivs, nature }) => {
-  const final = calculateFullSpread(baseStats, evs, ivs, nature);
+const MiniStatsChart: FC<MiniStatsChartProps> = ({ baseStats, sps, nature }) => {
+  const final = calculateFullSpread(baseStats, sps, nature);
   const values = STAT_KEYS.map((k) => final[k]);
 
   const gridPoints = (frac: number) =>

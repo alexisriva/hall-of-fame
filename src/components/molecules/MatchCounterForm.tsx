@@ -23,8 +23,7 @@ const EMPTY_BUILD = (): PokemonBuild => ({
   ability: "",
   nature: "Hardy",
   moves: ["", "", "", ""],
-  evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
-  ivs: { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 },
+  sps: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
 });
 
 const MatchCounterForm: FC<MatchCounterFormProps> = ({

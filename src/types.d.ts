@@ -91,8 +91,7 @@ type PokemonBuild = {
   ability: string;
   nature: Nature;
   moves: [string, string, string, string];
-  evs: Stats;
-  ivs: Stats;
+  sps: Stats;
   teraType?: string;
 };
 

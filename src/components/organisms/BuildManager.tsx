@@ -50,31 +50,21 @@ const BuildManager: FC<BuildManagerProps> = ({
   const handleStatChange = (
     stat: (typeof STATS)[number],
     val: number,
-    type: "evs" | "ivs",
   ) => {
-    let newVal = val;
+    let newVal = Math.max(0, Math.min(32, val));
 
-    if (type === "evs") {
-      if (newVal <= 2) newVal = 0;
-      else {
-        const steps = Math.round((newVal - 4) / 8);
-        newVal = Math.max(0, Math.min(252, 4 + steps * 8));
-      }
-      const otherTotal = STATS.reduce(
-        (acc, s) => (s === stat ? acc : acc + localBuild.evs[s]),
-        0,
-      );
-      const remaining = 508 - otherTotal;
-      if (newVal > remaining) {
-        newVal = remaining < 4 ? 0 : 4 + Math.floor((remaining - 4) / 8) * 8;
-      }
-    } else {
-      newVal = Math.max(0, Math.min(31, newVal));
+    const otherTotal = STATS.reduce(
+      (acc, s) => (s === stat ? acc : acc + localBuild.sps[s]),
+      0,
+    );
+    const remaining = 66 - otherTotal;
+    if (newVal > remaining) {
+      newVal = remaining;
     }
 
     setLocalBuild((prev) => ({
       ...prev,
-      [type]: { ...prev[type], [stat]: newVal },
+      sps: { ...prev.sps, [stat]: newVal },
     }));
   };
 
@@ -315,7 +305,7 @@ const BuildManager: FC<BuildManagerProps> = ({
           {/* Stats */}
           <div className="flex flex-col gap-2">
             <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
-              Stats — EVs / IVs
+              Stats — SPs (Max 32 / Total 66)
             </span>
             <div className="rounded-xl bg-[#161C29] px-5 py-4 flex flex-col gap-3">
               {STATS.map((stat) => (
@@ -328,39 +318,20 @@ const BuildManager: FC<BuildManagerProps> = ({
                     min={0}
                     max={32}
                     step={1}
-                    value={
-                      localBuild.evs[stat] === 0
-                        ? 0
-                        : (localBuild.evs[stat] - 4) / 8 + 1
-                    }
-                    onChange={(step) => {
-                      const evVal = step === 0 ? 0 : 4 + (step - 1) * 8;
-                      handleStatChange(stat, evVal, "evs");
-                    }}
+                    value={localBuild.sps[stat]}
+                    onChange={(val) => handleStatChange(stat, val)}
                   />
 
                   <input
                     type="number"
-                    value={localBuild.evs[stat]}
+                    min={0}
+                    max={32}
+                    value={localBuild.sps[stat]}
                     onChange={(e) =>
-                      handleStatChange(stat, Number(e.target.value), "evs")
+                      handleStatChange(stat, Number(e.target.value))
                     }
                     className="w-12 bg-transparent text-right text-[#b22200] font-bold text-sm outline-none shrink-0"
                   />
-
-                  <div className="flex items-center gap-1.5 bg-white/5 rounded-lg px-2.5 py-1.5 shrink-0">
-                    <span className="text-white/30 text-xs font-mono">IV</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={31}
-                      value={localBuild.ivs[stat]}
-                      onChange={(e) =>
-                        handleStatChange(stat, Number(e.target.value), "ivs")
-                      }
-                      className="w-8 bg-transparent text-white/70 text-sm text-center outline-none"
-                    />
-                  </div>
                 </div>
               ))}
             </div>
@@ -370,8 +341,7 @@ const BuildManager: FC<BuildManagerProps> = ({
           {data && (
             <StatsViewer
               baseStats={baseStats}
-              evs={localBuild.evs}
-              ivs={localBuild.ivs}
+              sps={localBuild.sps}
               nature={localBuild.nature}
             />
           )}
@@ -392,8 +362,8 @@ const BuildManager: FC<BuildManagerProps> = ({
       {tab === "import" && (
         <div className="flex flex-col gap-4">
           <p className="text-white/40 text-xs leading-relaxed">
-            Paste a Pokémon Showdown export below. Item, ability, nature, EVs,
-            IVs, and moves will be imported automatically.
+            Paste a Pokémon Showdown export below. Item, ability, nature, SPs
+            (converted from EVs), and moves will be imported automatically.
           </p>
 
           <textarea
@@ -403,7 +373,7 @@ const BuildManager: FC<BuildManagerProps> = ({
               setParseError("");
             }}
             rows={10}
-            placeholder={`Zapdos-Galar @ Grassy Seed\nAbility: Defiant\nLevel: 50\nEVs: 92 HP / 236 Atk / 12 Def / 12 SpD / 156 Spe\nJolly Nature\n- Acrobatics\n- Thunderous Kick\n- Coaching\n- Protect`}
+            placeholder={`Zapdos-Galar @ Grassy Seed\nAbility: Defiant\nLevel: 50\nSPs: 12 HP / 30 Atk / 2 Def / 2 SpD / 20 Spe\nJolly Nature\n- Acrobatics\n- Thunderous Kick\n- Coaching\n- Protect`}
             spellCheck={false}
             className="w-full resize-none rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white font-mono placeholder:text-white/15 outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 transition-all leading-relaxed"
           />

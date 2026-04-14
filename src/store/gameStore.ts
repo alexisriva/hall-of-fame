@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware";
 import { v4 as uuidv4 } from "uuid";
 
 const defaultStats: Stats = { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 };
-const defaultIvs: Stats = { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 };
 
 export const createEmptyBuild = (species: string): PokemonBuild => ({
   id: uuidv4(),
@@ -13,8 +12,7 @@ export const createEmptyBuild = (species: string): PokemonBuild => ({
   ability: "",
   nature: "Adamant",
   moves: ["", "", "", ""],
-  evs: { ...defaultStats },
-  ivs: { ...defaultIvs },
+  sps: { ...defaultStats },
 });
 
 interface GameStore {

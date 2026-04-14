@@ -52,8 +52,7 @@ export const useRandomHallOfFame = (enabled: boolean) => {
         nature: RANDOM_NATURES[i],
         teraType: RANDOM_TERA_TYPES[i],
         moves: ["", "", "", ""] as [string, string, string, string],
-        evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
-        ivs: { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 },
+        sps: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
       };
     });
 

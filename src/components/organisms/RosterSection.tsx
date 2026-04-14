@@ -109,8 +109,7 @@ const RosterSection: FC<RosterSectionProps> = ({
             ability: parsed.ability ?? "",
             nature: parsed.nature ?? "Adamant",
             moves: parsed.moves,
-            evs: parsed.evs,
-            ivs: parsed.ivs,
+            sps: parsed.sps,
             teraType: parsed.teraType,
             species: {
               name: species,
@@ -273,7 +272,7 @@ const RosterSection: FC<RosterSectionProps> = ({
                 setImportError("");
               }}
               rows={12}
-              placeholder={`Zapdos-Galar @ Grassy Seed\nAbility: Defiant\nEVs: 92 HP / 236 Atk / 12 Def / 12 SpD / 156 Spe\nJolly Nature\n- Acrobatics\n- Thunderous Kick\n- Coaching\n- Protect\n\nIncineroar (M) @ Rocky Helmet\n...`}
+              placeholder={`Zapdos-Galar @ Grassy Seed\nAbility: Defiant\nSPs: 12 HP / 30 Atk / 2 Def / 2 SpD / 20 Spe\nJolly Nature\n- Acrobatics\n- Thunderous Kick\n- Coaching\n- Protect\n\nIncineroar (M) @ Rocky Helmet\n...`}
               spellCheck={false}
               className="w-full resize-none rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white font-mono placeholder:text-white/15 outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 transition-all leading-relaxed"
             />

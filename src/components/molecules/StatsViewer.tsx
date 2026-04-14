@@ -3,8 +3,7 @@ import { calculateFullSpread, NATURE_MODIFIERS } from "../../utils/statsCalc";
 
 interface StatsViewerProps {
   baseStats: Stats;
-  evs: Stats;
-  ivs: Stats;
+  sps: Stats;
   nature: Nature;
   variant?: "full" | "mini";
 }
@@ -40,12 +39,11 @@ const pt = (angle: number, r: number) => ({
 
 const StatsViewer: FC<StatsViewerProps> = ({
   baseStats,
-  evs,
-  ivs,
+  sps,
   nature,
   variant = "full",
 }) => {
-  const final = calculateFullSpread(baseStats, evs, ivs, nature);
+  const final = calculateFullSpread(baseStats, sps, nature);
   const values = STAT_KEYS.map((k) => final[k]);
 
   const { plus, minus } = NATURE_MODIFIERS[nature];

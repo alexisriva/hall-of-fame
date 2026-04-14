@@ -31,22 +31,22 @@ export const NATURE_MODIFIERS: Record<Nature, { plus?: string; minus?: string }>
 interface CalcParams {
   statName: string;
   base: number;
-  iv: number;
-  ev: number;
+  sp: number;
   nature: Nature;
 }
 
 const calculateStat = ({
   statName,
   base,
-  iv,
-  ev,
+  sp,
   nature,
 }: CalcParams): number => {
   const L = 50;
+  const iv = 31;
 
   // Base calculation shared by HP and others
-  const common = Math.floor(((2 * base + iv + Math.floor(ev / 4)) * L) / 100);
+  // In the new SP system at level 50, 1 SP = 1 real stat point.
+  const common = Math.floor(((2 * base + iv) * L) / 100) + sp;
 
   if (statName === "hp") {
     // Special case for Shedinja would go here if base is 1
@@ -68,8 +68,7 @@ const calculateStat = ({
  */
 export const calculateFullSpread = (
   baseStats: Stats,
-  evs: Stats,
-  ivs: Stats,
+  sps: Stats,
   nature: Nature,
 ): Stats => {
   const statKeys: (keyof Stats)[] = ["hp", "atk", "def", "spa", "spd", "spe"];
@@ -90,8 +89,7 @@ export const calculateFullSpread = (
     finalStats[key] = calculateStat({
       statName: statMap[key],
       base: baseStats[key],
-      iv: ivs[key],
-      ev: evs[key],
+      sp: sps[key],
       nature: nature,
     });
   });

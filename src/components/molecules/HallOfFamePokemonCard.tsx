@@ -66,8 +66,7 @@ const HallOfFamePokemonCard: FC<HallOfFamePokemonCardProps> = ({
         <div className="w-full pointer-events-none">
           <StatsViewer
             baseStats={build.species.baseStats}
-            evs={build.evs}
-            ivs={build.ivs}
+            sps={build.sps}
             nature={build.nature}
             variant="mini"
           />

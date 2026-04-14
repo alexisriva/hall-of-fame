@@ -6,7 +6,7 @@ A competitive Pokémon VGC team management app. Track your builds, organize your
 
 - **Hall of Fame** — ranks your most-used Pokémon across all teams by usage percentage
 - **Team Hub** — create and manage multiple teams, each with a roster of up to 6 Pokémon
-- **Builds** — define detailed competitive builds (EVs, IVs, nature, item, moves) per Pokémon species, powered by PokéAPI
+- **Builds** — define detailed competitive builds (SPs, nature, item, moves) per Pokémon species, powered by PokéAPI
 - **Journal** — per-team strategic log: record match leads, critical threats, and additional insights
 - **Collapsible sidebar** on desktop, **dropdown top nav** on mobile
 

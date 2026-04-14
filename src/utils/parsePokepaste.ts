@@ -30,8 +30,7 @@ const evKeyMap: Record<string, keyof Stats> = {
 };
 
 export function parsePokepaste(text: string): Partial<PokemonBuild> & {
-  evs: Stats;
-  ivs: Stats;
+  sps: Stats;
   moves: [string, string, string, string];
 } {
   const lines = text
@@ -40,14 +39,12 @@ export function parsePokepaste(text: string): Partial<PokemonBuild> & {
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const evs: Stats = { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 };
-  const ivs: Stats = { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 };
+  const sps: Stats = { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 };
   const moves: [string, string, string, string] = ["", "", "", ""];
   const result: Partial<PokemonBuild> & {
-    evs: Stats;
-    ivs: Stats;
+    sps: Stats;
     moves: [string, string, string, string];
-  } = { evs, ivs, moves };
+  } = { sps, moves };
 
   let moveCount = 0;
 
@@ -87,13 +84,17 @@ export function parsePokepaste(text: string): Partial<PokemonBuild> & {
           const m = part.trim().match(/^(\d+)\s+(\w+)$/);
           if (m) {
             const key = evKeyMap[m[2]];
-            if (key) evs[key] = parseInt(m[1], 10);
+            if (key) {
+              const ev = parseInt(m[1], 10);
+              // Convert legacy EVs to SPs: 0 EVs = 0 SP, 4 EVs = 1 SP, 12 EVs = 2 SP... 252 EVs = 32 SP
+              sps[key] = ev === 0 ? 0 : Math.floor((ev - 4) / 8) + 1;
+            }
           }
         });
       continue;
     }
 
-    if (line.startsWith("IVs:")) {
+    if (line.startsWith("SPs:")) {
       line
         .slice(4)
         .trim()
@@ -102,9 +103,18 @@ export function parsePokepaste(text: string): Partial<PokemonBuild> & {
           const m = part.trim().match(/^(\d+)\s+(\w+)$/);
           if (m) {
             const key = evKeyMap[m[2]];
-            if (key) ivs[key] = parseInt(m[1], 10);
+            if (key) {
+              const sp = parseInt(m[1], 10);
+              // Already SPs, keep as is (capped at 32)
+              sps[key] = Math.max(0, Math.min(32, sp));
+            }
           }
         });
+      continue;
+    }
+
+    // IVs are ignored in the new SP system (always 31)
+    if (line.startsWith("IVs:")) {
       continue;
     }
 
