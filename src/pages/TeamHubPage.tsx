@@ -8,6 +8,7 @@ import Modal from "../components/molecules/Modal";
 import Dialog from "../components/molecules/Dialog";
 import TeamCard from "../components/molecules/TeamCard";
 import { HiOutlineTrash } from "react-icons/hi2";
+import { REGULATIONS } from "../utils/regulations";
 
 const TeamHubPage = () => {
   const teams = useGameStore((s) => s.teams);
@@ -17,14 +18,14 @@ const TeamHubPage = () => {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [teamName, setTeamName] = useState("");
-  const [regulation, setRegulation] = useState("");
+  const [regulation, setRegulation] = useState<string>(REGULATIONS[0]);
   const [deletingTeamId, setDeletingTeamId] = useState<string | null>(null);
 
   const handleCreate = () => {
     if (!teamName.trim()) return;
     addTeam({
       name: teamName.trim(),
-      regulation: regulation.trim(),
+      regulation: regulation,
       pokemon: [],
       leads: [],
       counters: [],
@@ -33,7 +34,7 @@ const TeamHubPage = () => {
       losses: 0,
     });
     setTeamName("");
-    setRegulation("");
+    setRegulation(REGULATIONS[0]);
     setCreateOpen(false);
   };
 
@@ -109,11 +110,17 @@ const TeamHubPage = () => {
             <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
               Regulation
             </span>
-            <TextInput
+            <select
               value={regulation}
-              onChange={setRegulation}
-              placeholder="e.g. Reg G"
-            />
+              onChange={(e) => setRegulation(e.target.value)}
+              className="w-full rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 appearance-none cursor-pointer transition-all"
+            >
+              {REGULATIONS.map((reg) => (
+                <option key={reg} value={reg} className="bg-[#0F1115]">
+                  {reg}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="flex justify-end gap-2 pt-1">
             <Button
