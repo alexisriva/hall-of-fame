@@ -191,10 +191,6 @@ const JournalPage = () => {
       {/* Additional Insights */}
       <SubsectionCard title="Additional Insights" icon={<HiOutlineLightBulb />}>
         <TextArea value={insights} onChange={setInsights} rows={6} />
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button label={`Wins: ${team.wins}`} variant="primary" />
-          <Button label={`Losses: ${team.losses}`} variant="secondary" />
-        </div>
       </SubsectionCard>
 
       {/* Lead Modal */}

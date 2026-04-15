@@ -114,7 +114,7 @@ const WeaknessIndex: FC<WeaknessIndexProps> = ({ members }) => {
             Weakness Index
           </span>
           <span className="text-white/20 text-xs">
-            W<sub>t</sub> = Σ M(p<sub>i</sub>, t)
+            Optimal defense profile: W<sub>t</sub> &gt; 6.0
           </span>
         </div>
         {typeEntries.length === 0 ? (
