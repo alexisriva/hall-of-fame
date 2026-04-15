@@ -1,6 +1,8 @@
 import type { FC } from "react";
 import TypeIcon from "../atoms/TypeIcon";
 import StatsViewer from "./StatsViewer";
+import megaIcon from "../../assets/mega.png";
+import gmaxIcon from "../../assets/gmax.png";
 
 interface HallOfFamePokemonCardProps {
   build: PokemonBuild;
@@ -20,11 +22,36 @@ const HallOfFamePokemonCard: FC<HallOfFamePokemonCardProps> = ({
   const types = build.species?.types ?? [];
   const sprite = build.species?.sprite;
 
+  const isMega = build.species?.form?.toLowerCase().endsWith("-mega");
+  const isGigantamax = build.species?.form?.toLowerCase().endsWith("-gmax");
+
   return (
     <div
-      className="overflow-hidden rounded-2xl bg-[#161C29] px-5 pt-5 pb-4 flex flex-col gap-3 min-h-[200px]"
+      className="relative overflow-hidden rounded-2xl bg-[#161C29] px-5 pt-5 pb-4 flex flex-col gap-3 min-h-[200px]"
       style={{ boxShadow: "0 12px 40px rgba(42, 55, 94, 0.08)" }}
     >
+      {/* Mega/Gmax Indicator */}
+      {(isMega || isGigantamax) && (
+        <div className="absolute top-4 right-4 z-20">
+          {isMega && (
+            <img
+              src={megaIcon}
+              alt="Mega"
+              width={28}
+              className="drop-shadow-md"
+            />
+          )}
+          {isGigantamax && (
+            <img
+              src={gmaxIcon}
+              alt="Gmax"
+              width={28}
+              className="drop-shadow-md"
+            />
+          )}
+        </div>
+      )}
+
       {/* Sprite top-left */}
       {sprite && (
         <img

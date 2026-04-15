@@ -1,5 +1,7 @@
 import type { FC } from "react";
 import TypeIcon from "../atoms/TypeIcon";
+import megaIcon from "../../assets/mega.png";
+import gmaxIcon from "../../assets/gmax.png";
 
 interface BuildCardProps {
   build: PokemonBuild;
@@ -10,6 +12,9 @@ const BuildCard: FC<BuildCardProps> = ({ build, onClick }) => {
   const types = build.species?.types ?? [];
   const sprite = build.species?.sprite;
   const teraType = build.teraType;
+
+  const isMega = build.species?.form?.toLowerCase().endsWith("-mega");
+  const isGigantamax = build.species?.form?.toLowerCase().endsWith("-gmax");
 
   return (
     <div
@@ -28,6 +33,9 @@ const BuildCard: FC<BuildCardProps> = ({ build, onClick }) => {
               <TypeIcon key={type} type={type} />
             ))}
             {teraType && <TypeIcon type={teraType} size={30} tera />}
+            {(isMega || isGigantamax) && <span> · </span>}
+            {isMega && <img src={megaIcon} alt="Mega" width={20} />}
+            {isGigantamax && <img src={gmaxIcon} alt="Gmax" width={28} />}
           </div>
         )}
       </div>

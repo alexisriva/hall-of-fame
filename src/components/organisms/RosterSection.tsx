@@ -177,6 +177,7 @@ const RosterSection: FC<RosterSectionProps> = ({
             imageUrl={m.species?.sprite ?? ""}
             types={m.species?.types}
             teraType={m.teraType}
+            form={m.species?.form}
             onClick={onRemove ? () => onRemove(m.id) : undefined}
           />
         ))}
