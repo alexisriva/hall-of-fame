@@ -38,7 +38,8 @@ export const useRandomHallOfFame = (enabled: boolean) => {
         id: String(data.id),
         name: data.name,
         species: {
-          name: data.name,
+          name: data.species.name,
+          form: data.name,
           sprite:
             data.sprites.other?.["official-artwork"]?.front_default ||
             data.sprites.front_default ||

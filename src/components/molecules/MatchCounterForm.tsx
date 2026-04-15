@@ -14,6 +14,7 @@ const EMPTY_BUILD = (): PokemonBuild => ({
   name: "",
   species: {
     name: "",
+    form: "",
     sprite: "",
     types: [],
     baseStats: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
@@ -42,6 +43,7 @@ const MatchCounterForm: FC<MatchCounterFormProps> = ({
       name: speciesName.trim(),
       species: {
         name: speciesName.trim().toLowerCase(),
+        form: speciesName.trim().toLowerCase(),
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${speciesName.trim().toLowerCase()}.png`,
         types: [],
         baseStats: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },

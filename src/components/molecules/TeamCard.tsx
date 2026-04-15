@@ -35,7 +35,7 @@ const TeamCard: FC<TeamCardProps> = ({ team, onClick }) => {
         {members.length === 0 ? (
           <span className="text-white/15 text-xs italic">No members yet</span>
         ) : (
-          <div className="flex gap-1.5 items-end">
+          <div className="flex gap-2.5 items-end">
             {members.map((build, i) =>
               build.species?.sprite ? (
                 <img

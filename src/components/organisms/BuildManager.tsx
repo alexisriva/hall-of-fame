@@ -47,10 +47,7 @@ const BuildManager: FC<BuildManagerProps> = ({
     : data?.sprites.other?.["official-artwork"]?.front_default ||
       data?.sprites.front_default;
 
-  const handleStatChange = (
-    stat: (typeof STATS)[number],
-    val: number,
-  ) => {
+  const handleStatChange = (stat: (typeof STATS)[number], val: number) => {
     let newVal = Math.max(0, Math.min(32, val));
 
     const otherTotal = STATS.reduce(
@@ -97,7 +94,8 @@ const BuildManager: FC<BuildManagerProps> = ({
     const buildToSave: PokemonBuild = {
       ...localBuild,
       species: {
-        name: species.toLowerCase(),
+        name: data.species.name,
+        form: data.name,
         sprite: spriteUrl || "",
         types: data.types.map((t) => t.type.name),
         baseStats: baseStats,
@@ -151,7 +149,7 @@ const BuildManager: FC<BuildManagerProps> = ({
             className="text-2xl font-bold bg-transparent text-white outline-none border-b border-transparent hover:border-white/10 focus:border-[#b22200]/50 transition-all placeholder:text-white/20 w-full"
           />
           <span className="text-white/30 text-xs tracking-widest capitalize">
-            {species}
+            {data?.species.name || species}
           </span>
         </div>
 

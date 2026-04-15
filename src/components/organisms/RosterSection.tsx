@@ -112,7 +112,8 @@ const RosterSection: FC<RosterSectionProps> = ({
             sps: parsed.sps,
             teraType: parsed.teraType,
             species: {
-              name: species,
+              name: apiData.species.name,
+              form: apiData.name,
               sprite: spriteUrl || "",
               types: apiData.types.map(
                 (t: { type: { name: string } }) => t.type.name,

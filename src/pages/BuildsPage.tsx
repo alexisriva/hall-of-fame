@@ -36,7 +36,7 @@ const BuildsPage = () => {
   };
 
   const handleEditBuild = (build: PokemonBuild) => {
-    setPendingSpecies(build.species?.name ?? "");
+    setPendingSpecies(build.species?.form ?? build.species?.name ?? "");
     setEditingBuild(build);
     setBuildManagerOpen(true);
   };

@@ -1,2 +1,2 @@
-export const REGULATIONS = ["Champions M-1"] as const;
+export const REGULATIONS = ["Set M-A"] as const;
 export type Regulation = (typeof REGULATIONS)[number];

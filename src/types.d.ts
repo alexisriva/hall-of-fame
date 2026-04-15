@@ -82,6 +82,7 @@ type PokemonBuild = {
   name: string; // build name (e.g. "Sweeper")
   species?: {
     name: string;
+    form: string;
     sprite: string;
     types: string[];
     baseStats: Stats;
