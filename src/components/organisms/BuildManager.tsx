@@ -1,4 +1,4 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useGameStore, createEmptyBuild } from "../../store/gameStore";
 import { usePokemonData } from "../../hooks/usePokemonData";
 import Button from "../atoms/Button";
@@ -8,7 +8,7 @@ import Loading from "../atoms/Loading";
 import MoveAutocomplete from "../molecules/MoveAutocomplete";
 import StatsViewer from "../molecules/StatsViewer";
 import { NATURES, STATS, TYPES } from "../../utils/constants";
-import { capitalize } from "../../utils/helpers";
+import { capitalize, resolveBestSprite } from "../../utils/helpers";
 import { parsePokepaste } from "../../utils/parsePokepaste";
 import { reduceStats } from "../../utils/statsReducer";
 
@@ -41,11 +41,15 @@ const BuildManager: FC<BuildManagerProps> = ({
 
   const baseStats: Stats = reduceStats(data);
 
-  const spriteUrl = localBuild.isShiny
-    ? data?.sprites.other?.["official-artwork"]?.front_shiny ||
-      data?.sprites.front_shiny
-    : data?.sprites.other?.["official-artwork"]?.front_default ||
-      data?.sprites.front_default;
+  const [spriteUrl, setSpriteUrl] = useState("");
+
+  useEffect(() => {
+    const updateSprite = async () => {
+      const url = await resolveBestSprite(data, localBuild.isShiny);
+      setSpriteUrl(url);
+    };
+    updateSprite();
+  }, [data, localBuild.isShiny]);
 
   const handleStatChange = (stat: (typeof STATS)[number], val: number) => {
     let newVal = Math.max(0, Math.min(32, val));

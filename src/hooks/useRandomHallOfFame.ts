@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { useQueries } from "@tanstack/react-query";
 import { pokemonQueryOptions } from "./usePokemonData";
 import { reduceStats } from "../utils/statsReducer";
+import { resolveBestSprite } from "../utils/helpers";
 import { NATURES, TYPES } from "../utils/constants";
 
 const pick = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
@@ -28,6 +30,26 @@ export const useRandomHallOfFame = (enabled: boolean) => {
     })),
   });
 
+  const [sprites, setSprites] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const resolveAll = async () => {
+      const newSprites: Record<string, string> = {};
+      const promises = results.map(async (r) => {
+        if (r.data) {
+          const url = await resolveBestSprite(r.data);
+          newSprites[String(r.data.id)] = url;
+        }
+      });
+      await Promise.all(promises);
+      setSprites(newSprites);
+    };
+
+    if (enabled && results.some((r) => r.data)) {
+      resolveAll();
+    }
+  }, [results, enabled]);
+
   const isLoading = enabled && results.some((r) => r.isPending);
 
   const builds: PokemonBuild[] = results
@@ -40,10 +62,7 @@ export const useRandomHallOfFame = (enabled: boolean) => {
         species: {
           name: data.species.name,
           form: data.name,
-          sprite:
-            data.sprites.other?.["official-artwork"]?.front_default ||
-            data.sprites.front_default ||
-            "",
+          sprite: sprites[String(data.id)] || "",
           types: data.types.map((t) => t.type.name),
           baseStats: reduceStats(data),
         },

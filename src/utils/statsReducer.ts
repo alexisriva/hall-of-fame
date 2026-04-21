@@ -1,3 +1,5 @@
+import type { Pokemon } from "pokenode-ts";
+
 const API_STAT_MAP: Record<string, keyof Stats> = {
   hp: "hp",
   attack: "atk",
@@ -7,7 +9,7 @@ const API_STAT_MAP: Record<string, keyof Stats> = {
   speed: "spe",
 };
 
-export const reduceStats = (data: PokemonApiData | undefined) => {
+export const reduceStats = (data: Pokemon | undefined) => {
   return data
     ? data.stats.reduce(
         (acc, s) => {

@@ -15,6 +15,7 @@ import {
 } from "../../utils/parsePokepaste";
 import { pokemonQueryOptions } from "../../hooks/usePokemonData";
 import { reduceStats } from "../../utils/statsReducer";
+import { resolveBestSprite } from "../../utils/helpers";
 
 interface RosterSectionProps {
   memberIds: string[];
@@ -95,11 +96,7 @@ const RosterSection: FC<RosterSectionProps> = ({
           );
           const parsed = parsePokepaste(block);
 
-          const spriteUrl = parsed.isShiny
-            ? apiData.sprites.other?.["official-artwork"]?.front_shiny ||
-              apiData.sprites.front_shiny
-            : apiData.sprites.other?.["official-artwork"]?.front_default ||
-              apiData.sprites.front_default;
+          const spriteUrl = await resolveBestSprite(apiData, parsed.isShiny);
 
           const build: PokemonBuild = {
             id: uuidv4(),

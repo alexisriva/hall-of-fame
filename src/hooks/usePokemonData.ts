@@ -1,18 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
+import { PokemonClient } from "pokenode-ts";
 
-const fetchPokemon = async (name: string): Promise<PokemonApiData> => {
-  const response = await fetch(
-    `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`
-  );
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${name}`);
-  }
-  return response.json();
-};
+export const api = new PokemonClient();
 
 export const pokemonQueryOptions = (name: string) => ({
   queryKey: ["pokemon", name.toLowerCase()] as const,
-  queryFn: () => fetchPokemon(name),
+  queryFn: () => api.getPokemonByName(name.toLowerCase()),
 });
 
 export const usePokemonData = (name: string) => {

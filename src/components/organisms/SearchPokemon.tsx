@@ -1,5 +1,6 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { usePokemonData } from "../../hooks/usePokemonData";
+import { resolveBestSprite } from "../../utils/helpers";
 import Button from "../atoms/Button";
 import TextInput from "../atoms/TextInput";
 import Loading from "../atoms/Loading";
@@ -14,9 +15,16 @@ const SearchPokemon: FC<Props> = ({ onClose, onConfirm }) => {
   const [error, setError] = useState("");
   const { data, isLoading } = usePokemonData(search);
 
-  const spriteUrl =
-    data?.sprites.other?.["official-artwork"]?.front_default ||
-    data?.sprites.front_default;
+  const [spriteUrl, setSpriteUrl] = useState("");
+
+  useEffect(() => {
+    const updateSprite = async () => {
+      const url = await resolveBestSprite(data);
+      console.log(url);
+      setSpriteUrl(url);
+    };
+    updateSprite();
+  }, [data]);
 
   const handleConfirm = () => {
     if (!search.trim()) return;

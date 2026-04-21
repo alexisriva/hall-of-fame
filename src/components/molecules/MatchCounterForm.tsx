@@ -1,6 +1,10 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import Button from "../atoms/Button";
 import TextArea from "../atoms/TextArea";
+import Loading from "../atoms/Loading";
+import { usePokemonData } from "../../hooks/usePokemonData";
+import { resolveBestSprite } from "../../utils/helpers";
+import { reduceStats } from "../../utils/statsReducer";
 
 interface MatchCounterFormProps {
   onSubmit: (counter: MatchCounter) => void;
@@ -36,17 +40,29 @@ const MatchCounterForm: FC<MatchCounterFormProps> = ({
   const [speciesName, setSpeciesName] = useState(initialSpeciesName ?? "");
   const [notes, setNotes] = useState(initialNotes ?? "");
 
+  const { data, isLoading } = usePokemonData(speciesName);
+
+  const [spriteUrl, setSpriteUrl] = useState("");
+
+  useEffect(() => {
+    const updateSprite = async () => {
+      const url = await resolveBestSprite(data);
+      setSpriteUrl(url);
+    };
+    updateSprite();
+  }, [data]);
+
   const handleSubmit = () => {
-    if (!speciesName.trim()) return;
+    if (!speciesName.trim() || !data) return;
     const pokemon: PokemonBuild = {
       ...EMPTY_BUILD(),
       name: speciesName.trim(),
       species: {
-        name: speciesName.trim().toLowerCase(),
-        form: speciesName.trim().toLowerCase(),
-        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${speciesName.trim().toLowerCase()}.png`,
-        types: [],
-        baseStats: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
+        name: data.species.name,
+        form: data.name,
+        sprite: spriteUrl,
+        types: data.types.map((t) => t.type.name),
+        baseStats: reduceStats(data),
       },
     };
     onSubmit({ pokemon, notes });
@@ -54,6 +70,23 @@ const MatchCounterForm: FC<MatchCounterFormProps> = ({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Preview */}
+      <div className="flex flex-col items-center justify-center min-h-[100px] rounded-xl bg-white/5">
+        {speciesName && isLoading ? (
+          <Loading size="sm" />
+        ) : spriteUrl ? (
+          <img
+            src={spriteUrl}
+            alt="preview"
+            className="w-20 h-20 object-contain"
+          />
+        ) : (
+          <span className="text-white/25 text-xs italic">
+            {speciesName ? "Not found" : "Preview"}
+          </span>
+        )}
+      </div>
+
       {/* Species input */}
       <div className="flex flex-col gap-2">
         <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
@@ -90,7 +123,7 @@ const MatchCounterForm: FC<MatchCounterFormProps> = ({
           label={initialSpeciesName ? "Save Threat" : "Add Threat"}
           variant="primary"
           onClick={handleSubmit}
-          disabled={!speciesName.trim()}
+          disabled={!speciesName.trim() || isLoading || !data}
         />
       </div>
     </div>
