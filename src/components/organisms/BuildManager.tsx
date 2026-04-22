@@ -56,7 +56,7 @@ const BuildManager: FC<BuildManagerProps> = ({
 
   useEffect(() => {
     const updateSprite = async () => {
-      if (data && !initialBuild) {
+      if (data) {
         const url = await resolveBestSprite(data, localBuild.isShiny);
         setSpriteUrl(url);
       }

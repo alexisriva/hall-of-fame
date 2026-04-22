@@ -34,21 +34,27 @@ export const useRandomHallOfFame = (enabled: boolean) => {
 
   useEffect(() => {
     const resolveAll = async () => {
-      const newSprites: Record<string, string> = {};
+      let changed = false;
+      const newSprites = { ...sprites };
+
       const promises = results.map(async (r) => {
-        if (r.data) {
+        if (r.data && !newSprites[String(r.data.id)]) {
           const url = await resolveBestSprite(r.data);
           newSprites[String(r.data.id)] = url;
+          changed = true;
         }
       });
+
       await Promise.all(promises);
-      setSprites(newSprites);
+      if (changed) {
+        setSprites(newSprites);
+      }
     };
 
     if (enabled && results.some((r) => r.data)) {
       resolveAll();
     }
-  }, [results, enabled]);
+  }, [results, enabled, sprites]);
 
   const isLoading = enabled && results.some((r) => r.isPending);
 
