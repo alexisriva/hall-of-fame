@@ -6,6 +6,7 @@ interface MoveAutocompleteProps {
   onChange: (val: string) => void;
   availableMoves: string[];
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const MoveAutocomplete: FC<MoveAutocompleteProps> = ({
@@ -13,6 +14,7 @@ const MoveAutocomplete: FC<MoveAutocompleteProps> = ({
   onChange,
   availableMoves,
   placeholder,
+  disabled,
 }) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState(value);
@@ -30,6 +32,7 @@ const MoveAutocomplete: FC<MoveAutocompleteProps> = ({
     <div className="relative">
       <input
         value={query}
+        disabled={disabled}
         onChange={(e) => {
           const val = capitalize(e.target.value.replace(/-/g, " "));
           setQuery(val);
@@ -39,7 +42,9 @@ const MoveAutocomplete: FC<MoveAutocompleteProps> = ({
         onFocus={() => setShow(true)}
         onBlur={() => setTimeout(() => setShow(false), 200)}
         placeholder={placeholder}
-        className="w-full rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 transition-all"
+        className={`w-full rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 transition-all ${
+          disabled ? "opacity-50 cursor-not-allowed" : ""
+        }`}
       />
       {show && filtered.length > 0 && (
         <div className="absolute z-50 w-full bg-[#161C29] border border-white/5 rounded-xl shadow-xl max-h-48 overflow-y-auto mt-1">

@@ -39,14 +39,27 @@ const BuildManager: FC<BuildManagerProps> = ({
   const [pasteText, setPasteText] = useState("");
   const [parseError, setParseError] = useState("");
 
-  const baseStats: Stats = reduceStats(data);
+  const baseStats: Stats = data
+    ? reduceStats(data)
+    : (initialBuild?.species?.baseStats ?? {
+        hp: 0,
+        atk: 0,
+        def: 0,
+        spa: 0,
+        spd: 0,
+        spe: 0,
+      });
 
-  const [spriteUrl, setSpriteUrl] = useState("");
+  const [spriteUrl, setSpriteUrl] = useState(
+    initialBuild?.species?.sprite ?? "",
+  );
 
   useEffect(() => {
     const updateSprite = async () => {
-      const url = await resolveBestSprite(data, localBuild.isShiny);
-      setSpriteUrl(url);
+      if (data && !initialBuild) {
+        const url = await resolveBestSprite(data, localBuild.isShiny);
+        setSpriteUrl(url);
+      }
     };
     updateSprite();
   }, [data, localBuild.isShiny]);
@@ -94,16 +107,21 @@ const BuildManager: FC<BuildManagerProps> = ({
   };
 
   const handleSave = () => {
-    if (!data) return;
+    const speciesData = data
+      ? {
+          name: data.species.name,
+          form: data.name,
+          sprite: spriteUrl || "",
+          types: data.types.map((t) => t.type.name),
+          baseStats: baseStats,
+        }
+      : initialBuild?.species;
+
+    if (!speciesData) return;
+
     const buildToSave: PokemonBuild = {
       ...localBuild,
-      species: {
-        name: data.species.name,
-        form: data.name,
-        sprite: spriteUrl || "",
-        types: data.types.map((t) => t.type.name),
-        baseStats: baseStats,
-      },
+      species: speciesData,
     };
     if (initialBuild) {
       updateBuild(initialBuild.id, buildToSave);
@@ -115,7 +133,7 @@ const BuildManager: FC<BuildManagerProps> = ({
 
   // ── Loading state ──────────────────────────────────────────────────────────
 
-  if (isLoading) {
+  if (isLoading && !initialBuild) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loading size="lg" />
@@ -153,7 +171,7 @@ const BuildManager: FC<BuildManagerProps> = ({
             className="text-2xl font-bold bg-transparent text-white outline-none border-b border-transparent hover:border-white/10 focus:border-[#b22200]/50 transition-all placeholder:text-white/20 w-full"
           />
           <span className="text-white/30 text-xs tracking-widest capitalize">
-            {data?.species.name || species}
+            {data?.species.name || initialBuild?.species?.name || species}
           </span>
         </div>
 
@@ -209,7 +227,12 @@ const BuildManager: FC<BuildManagerProps> = ({
 
               <div className="flex flex-col gap-1.5">
                 <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
-                  Ability
+                  Ability{" "}
+                  {isLoading && (
+                    <span className="lowercase text-[10px] animate-pulse">
+                      (Loading...)
+                    </span>
+                  )}
                 </span>
                 <select
                   value={localBuild.ability}
@@ -219,21 +242,28 @@ const BuildManager: FC<BuildManagerProps> = ({
                       ability: e.target.value,
                     }))
                   }
-                  className={selectCls}
+                  disabled={isLoading}
+                  className={`${selectCls} ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <option value="" disabled className="bg-[#0F1115]">
                     Select Ability
                   </option>
-                  {data?.abilities.map((a) => (
-                    <option
-                      key={a.ability.name}
-                      value={a.ability.name}
-                      className="bg-[#0F1115]"
-                    >
-                      {capitalize(a.ability.name.replace("-", " "))}{" "}
-                      {a.is_hidden && "(Hidden)"}
+                  {!isLoading &&
+                    data?.abilities.map((a) => (
+                      <option
+                        key={a.ability.name}
+                        value={a.ability.name}
+                        className="bg-[#0F1115]"
+                      >
+                        {capitalize(a.ability.name.replace("-", " "))}{" "}
+                        {a.is_hidden && "(Hidden)"}
+                      </option>
+                    ))}
+                  {isLoading && localBuild.ability && (
+                    <option value={localBuild.ability} className="bg-[#0F1115]">
+                      {capitalize(localBuild.ability.replace("-", " "))}
                     </option>
-                  ))}
+                  )}
                 </select>
               </div>
 
@@ -288,7 +318,12 @@ const BuildManager: FC<BuildManagerProps> = ({
             {/* Moves */}
             <div className="flex flex-col gap-1.5">
               <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
-                Moveset
+                Moveset{" "}
+                {isLoading && (
+                  <span className="lowercase text-[10px] animate-pulse">
+                    (Loading Suggestions...)
+                  </span>
+                )}
               </span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {localBuild.moves.map((move, i) => (
@@ -298,6 +333,7 @@ const BuildManager: FC<BuildManagerProps> = ({
                     onChange={(val) => handleMoveChange(i, val)}
                     availableMoves={data?.moves.map((m) => m.move.name) ?? []}
                     placeholder={`Move ${i + 1}`}
+                    disabled={isLoading}
                   />
                 ))}
               </div>
@@ -340,13 +376,11 @@ const BuildManager: FC<BuildManagerProps> = ({
           </div>
 
           {/* Stats Viewer */}
-          {data && (
-            <StatsViewer
-              baseStats={baseStats}
-              sps={localBuild.sps}
-              nature={localBuild.nature}
-            />
-          )}
+          <StatsViewer
+            baseStats={baseStats}
+            sps={localBuild.sps}
+            nature={localBuild.nature}
+          />
 
           {/* Save */}
           <div className="flex justify-end pt-1">
@@ -354,7 +388,7 @@ const BuildManager: FC<BuildManagerProps> = ({
               label="Save"
               variant="primary"
               onClick={handleSave}
-              disabled={!data}
+              disabled={!data && !initialBuild}
             />
           </div>
         </>

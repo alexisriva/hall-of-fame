@@ -20,7 +20,6 @@ const SearchPokemon: FC<Props> = ({ onClose, onConfirm }) => {
   useEffect(() => {
     const updateSprite = async () => {
       const url = await resolveBestSprite(data);
-      console.log(url);
       setSpriteUrl(url);
     };
     updateSprite();
