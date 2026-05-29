@@ -17,9 +17,10 @@ interface TypeIconProps {
 }
 
 const TypeIcon: FC<TypeIconProps> = ({ type, tera = false, size = 20 }) => {
+  const t = type.toLowerCase();
   const src = tera
-    ? teraIcons[`../../assets/tera-types/tera-${type}.png`]
-    : typeIcons[`../../assets/types/${type}.png`];
+    ? teraIcons[`../../assets/tera-types/tera-${t}.png`]
+    : typeIcons[`../../assets/types/${t}.png`];
 
   if (!src) return null;
 

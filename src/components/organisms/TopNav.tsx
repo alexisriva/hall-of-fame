@@ -4,6 +4,7 @@ import {
   HiOutlineSquare3Stack3D,
   HiOutlineBars3,
   HiXMark,
+  HiOutlineBolt,
 } from "react-icons/hi2";
 import { TbTriangleSquareCircle } from "react-icons/tb";
 import { SlTrophy } from "react-icons/sl";
@@ -20,6 +21,11 @@ const NAV_ITEMS = [
     label: "Builds",
     icon: <TbTriangleSquareCircle size={18} />,
     path: "/builds",
+  },
+  {
+    label: "Assistant",
+    icon: <HiOutlineBolt size={18} />,
+    path: "/match-assistant",
   },
 ];
 

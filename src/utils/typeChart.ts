@@ -63,9 +63,11 @@ const NO_EFFECT: Record<string, string[]> = {
 };
 
 export function getEffectiveness(attackType: string, defType: string): number {
-  if (NO_EFFECT[attackType]?.includes(defType)) return 0;
-  if (SUPER_EFFECTIVE[attackType]?.includes(defType)) return 2;
-  if (NOT_VERY_EFFECTIVE[attackType]?.includes(defType)) return 0.5;
+  const att = attackType.toLowerCase();
+  const def = defType.toLowerCase();
+  if (NO_EFFECT[att]?.includes(def)) return 0;
+  if (SUPER_EFFECTIVE[att]?.includes(def)) return 2;
+  if (NOT_VERY_EFFECTIVE[att]?.includes(def)) return 0.5;
   return 1;
 }
 
