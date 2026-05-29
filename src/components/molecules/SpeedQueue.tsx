@@ -1,6 +1,7 @@
 import { useState, type FC } from "react";
 import { HiOutlineChevronDoubleUp, HiOutlineBolt, HiOutlineArrowsUpDown } from "react-icons/hi2";
 import TypeIcon from "../atoms/TypeIcon";
+import { handlePokemonSpriteError } from "../../utils/pkmnDataHelper";
 
 export interface ActivePokemonSpeedState {
   id: string;
@@ -145,7 +146,10 @@ const SpeedQueue: FC<SpeedQueueProps> = ({ pokemonList, onUpdate }) => {
           ].join(" ")}
         >
           <HiOutlineChevronDoubleUp size={15} />
-          <span>Your Tailwind</span>
+          <span>
+            <span className="sm:inline hidden">Your Tailwind</span>
+            <span className="sm:hidden inline">Your TW</span>
+          </span>
         </button>
 
         {/* Opponent Tailwind Toggle */}
@@ -159,7 +163,10 @@ const SpeedQueue: FC<SpeedQueueProps> = ({ pokemonList, onUpdate }) => {
           ].join(" ")}
         >
           <HiOutlineChevronDoubleUp size={15} />
-          <span>Opp Tailwind</span>
+          <span>
+            <span className="sm:inline hidden">Opp Tailwind</span>
+            <span className="sm:hidden inline">Opp TW</span>
+          </span>
         </button>
 
         {/* Trick Room Toggle */}
@@ -173,7 +180,10 @@ const SpeedQueue: FC<SpeedQueueProps> = ({ pokemonList, onUpdate }) => {
           ].join(" ")}
         >
           <HiOutlineArrowsUpDown size={15} />
-          <span>Trick Room</span>
+          <span>
+            <span className="sm:inline hidden">Trick Room</span>
+            <span className="sm:hidden inline">TR</span>
+          </span>
         </button>
       </div>
 
@@ -197,7 +207,7 @@ const SpeedQueue: FC<SpeedQueueProps> = ({ pokemonList, onUpdate }) => {
               <div
                 key={p.id}
                 className={[
-                  "flex items-center gap-3 p-3 rounded-2xl border transition-all duration-300",
+                  "flex flex-col gap-2.5 sm:gap-3 p-3 rounded-2xl border transition-all duration-300",
                   p.isPlayer
                     ? "bg-[#1E293B]/40 border-sky-500/10 hover:border-sky-500/30"
                     : "bg-[#1C1917]/40 border-[#b22200]/10 hover:border-[#b22200]/30",
@@ -205,158 +215,263 @@ const SpeedQueue: FC<SpeedQueueProps> = ({ pokemonList, onUpdate }) => {
                 ].join(" ")}
                 style={{ boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)" }}
               >
-                {/* Ranking Index */}
-                <div className="w-5 text-center text-xs font-bold tabular-nums text-white/30 shrink-0">
-                  {idx + 1}
-                </div>
+                {/* Row 1: Sprite, Info (Name + Types), Speed Metric */}
+                <div className="flex items-center gap-3 w-full">
+                  {/* Ranking Index */}
+                  <div className="w-5 text-center text-xs font-bold tabular-nums text-white/30 shrink-0">
+                    {idx + 1}
+                  </div>
 
-                {/* Sprite */}
-                <div className="relative shrink-0 bg-white/5 rounded-xl p-1 w-12 h-12 flex items-center justify-center">
-                  <img
-                    src={p.spriteUrl}
-                    alt={p.name}
-                    className="w-10 h-10 object-contain pointer-events-none"
-                  />
-                  {/* Small team indicator pill */}
-                  <span
-                    className={[
-                      "absolute -bottom-1 -right-1 text-[8px] font-bold px-1 py-0.2 rounded-full",
-                      p.isPlayer
-                        ? "bg-sky-500 text-white"
-                        : "bg-[#b22200] text-white",
-                    ].join(" ")}
-                  >
-                    {p.isPlayer ? "YOU" : "OPP"}
-                  </span>
-                </div>
-
-                {/* Info Block */}
-                <div className="flex-1 min-w-0 flex flex-col">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="text-white font-bold text-sm capitalize truncate">
-                      {p.name}
+                  {/* Sprite */}
+                  <div className="relative shrink-0 bg-white/5 rounded-xl p-1 w-12 h-12 flex items-center justify-center">
+                    <img
+                      src={p.spriteUrl}
+                      alt={p.name}
+                      className="w-10 h-10 object-contain pointer-events-none"
+                      onError={(e) => handlePokemonSpriteError(e, p.name)}
+                    />
+                    {/* Small team indicator pill */}
+                    <span
+                      className={[
+                        "absolute -bottom-1 -right-1 text-[8px] font-bold px-1 py-0.2 rounded-full",
+                        p.isPlayer
+                          ? "bg-sky-500 text-white"
+                          : "bg-[#b22200] text-white",
+                      ].join(" ")}
+                    >
+                      {p.isPlayer ? "YOU" : "OPP"}
                     </span>
-                    <div className="flex gap-1 shrink-0">
-                      {p.types.map((type) => (
-                        <TypeIcon key={type} type={type} size={14} />
-                      ))}
+                  </div>
+
+                  {/* Info Block (Desktop layout includes inline benchmark) */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+                      <span className="text-white font-bold text-sm capitalize truncate">
+                        {p.name}
+                      </span>
+                      <div className="flex gap-1 shrink-0">
+                        {p.types.map((type) => (
+                          <TypeIcon key={type} type={type} size={14} />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Benchmark Selector (Desktop only) */}
+                    <div className="hidden sm:block mt-1">
+                      {p.isPlayer ? (
+                        <span className="text-[10px] font-bold text-sky-400">
+                          Custom SPs
+                        </span>
+                      ) : (
+                        <select
+                          value={p.benchmark}
+                          onChange={(e) =>
+                            onUpdate(p.id, { benchmark: e.target.value as any })
+                          }
+                          className="text-[10px] w-fit font-medium text-white/40 bg-transparent border-none outline-none cursor-pointer hover:text-white/70 transition-colors"
+                        >
+                          <option value="max_plus" className="bg-[#0F1115]">
+                            Jolly/Timid Max (252 EV+)
+                          </option>
+                          <option value="max_neutral" className="bg-[#0F1115]">
+                            Neutral Max (252 EV)
+                          </option>
+                          <option value="min_neutral" className="bg-[#0F1115]">
+                            Neutral Min (0 EV)
+                          </option>
+                          <option value="min" className="bg-[#0F1115]">
+                            Trick Room Min (0 IV-)
+                          </option>
+                        </select>
+                      )}
                     </div>
                   </div>
 
-                  {/* Benchmark Selector */}
-                  {p.isPlayer ? (
-                    <span className="text-[10px] font-bold text-sky-400 mt-1">
-                      Custom SPs
-                    </span>
-                  ) : (
-                    <select
-                      value={p.benchmark}
-                      onChange={(e) =>
-                        onUpdate(p.id, { benchmark: e.target.value as any })
-                      }
-                      className="mt-1 text-[10px] w-fit font-medium text-white/40 bg-transparent border-none outline-none cursor-pointer hover:text-white/70 transition-colors"
-                    >
-                      <option value="max_plus" className="bg-[#0F1115]">
-                        Jolly/Timid Max (252 EV+)
-                      </option>
-                      <option value="max_neutral" className="bg-[#0F1115]">
-                        Neutral Max (252 EV)
-                      </option>
-                      <option value="min_neutral" className="bg-[#0F1115]">
-                        Neutral Min (0 EV)
-                      </option>
-                      <option value="min" className="bg-[#0F1115]">
-                        Trick Room Min (0 IV-)
-                      </option>
-                    </select>
-                  )}
-                </div>
-
-                {/* Modifiers Toggles */}
-                <div className="flex items-center gap-1 shrink-0">
-
-                  {/* Scarf Toggle */}
-                  <button
-                    onClick={() => onUpdate(p.id, { scarf: !p.scarf })}
-                    title="Choice Scarf (1.5x)"
-                    className={[
-                      "p-1.5 rounded-lg border text-xs cursor-pointer transition-all",
-                      p.scarf
-                        ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-400"
-                        : "border-white/5 text-white/20 hover:text-white/40 hover:bg-white/5",
-                    ].join(" ")}
-                  >
-                    <HiOutlineBolt size={14} />
-                  </button>
-
-                  {/* Paralysis Toggle */}
-                  <button
-                    onClick={() => onUpdate(p.id, { paralysis: !p.paralysis })}
-                    title="Paralyzed (0.5x)"
-                    className={[
-                      "p-1.5 rounded-lg border text-xs cursor-pointer transition-all",
-                      p.paralysis
-                        ? "bg-[#b22200]/20 border-[#b22200]/40 text-[#b22200]"
-                        : "border-white/5 text-white/20 hover:text-white/40 hover:bg-white/5",
-                    ].join(" ")}
-                  >
-                    <span className="font-bold text-[9px] leading-none">
-                      PAR
-                    </span>
-                  </button>
-
-                  {/* Stat Stage Adjuster */}
-                  <div className="flex items-center bg-white/5 rounded-lg border border-white/5 overflow-hidden shrink-0">
+                  {/* Modifiers Toggles (Desktop only inline) */}
+                  <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+                    {/* Scarf Toggle */}
                     <button
-                      onClick={() =>
-                        onUpdate(p.id, { stage: Math.max(-6, p.stage - 1) })
-                      }
-                      className="px-1.5 py-1 text-white/30 hover:text-white/70 hover:bg-white/5 text-[9px] font-bold cursor-pointer transition-colors"
-                      title="Speed Stage Down"
-                    >
-                      -
-                    </button>
-                    <span
+                      onClick={() => onUpdate(p.id, { scarf: !p.scarf })}
+                      title="Choice Scarf (1.5x)"
                       className={[
-                        "px-1.5 text-[9px] font-bold tabular-nums min-w-[20px] text-center",
-                        p.stage > 0
-                          ? "text-emerald-400"
-                          : p.stage < 0
-                            ? "text-[#b22200]"
-                            : "text-white/30",
+                        "p-1.5 rounded-lg border text-xs cursor-pointer transition-all",
+                        p.scarf
+                          ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-400"
+                          : "border-white/5 text-white/20 hover:text-white/40 hover:bg-white/5",
                       ].join(" ")}
                     >
-                      {p.stage > 0 ? `+${p.stage}` : p.stage}
-                    </span>
-                    <button
-                      onClick={() =>
-                        onUpdate(p.id, { stage: Math.min(6, p.stage + 1) })
-                      }
-                      className="px-1.5 py-1 text-white/30 hover:text-white/70 hover:bg-white/5 text-[9px] font-bold cursor-pointer transition-colors"
-                      title="Speed Stage Up"
-                    >
-                      +
+                      <HiOutlineBolt size={14} />
                     </button>
+
+                    {/* Paralysis Toggle */}
+                    <button
+                      onClick={() => onUpdate(p.id, { paralysis: !p.paralysis })}
+                      title="Paralyzed (0.5x)"
+                      className={[
+                        "p-1.5 rounded-lg border text-xs cursor-pointer transition-all",
+                        p.paralysis
+                          ? "bg-[#b22200]/20 border-[#b22200]/40 text-[#b22200]"
+                          : "border-white/5 text-white/20 hover:text-white/40 hover:bg-white/5",
+                      ].join(" ")}
+                    >
+                      <span className="font-bold text-[9px] leading-none">
+                        PAR
+                      </span>
+                    </button>
+
+                    {/* Stat Stage Adjuster */}
+                    <div className="flex items-center bg-white/5 rounded-lg border border-white/5 overflow-hidden shrink-0">
+                      <button
+                        onClick={() =>
+                          onUpdate(p.id, { stage: Math.max(-6, p.stage - 1) })
+                        }
+                        className="px-1.5 py-1 text-white/30 hover:text-white/70 hover:bg-white/5 text-[9px] font-bold cursor-pointer transition-colors"
+                        title="Speed Stage Down"
+                      >
+                        -
+                      </button>
+                      <span
+                        className={[
+                          "px-1.5 text-[9px] font-bold tabular-nums min-w-[20px] text-center",
+                          p.stage > 0
+                            ? "text-emerald-400"
+                            : p.stage < 0
+                              ? "text-[#b22200]"
+                              : "text-white/30",
+                        ].join(" ")}
+                      >
+                        {p.stage > 0 ? `+${p.stage}` : p.stage}
+                      </span>
+                      <button
+                        onClick={() =>
+                          onUpdate(p.id, { stage: Math.min(6, p.stage + 1) })
+                        }
+                        className="px-1.5 py-1 text-white/30 hover:text-white/70 hover:bg-white/5 text-[9px] font-bold cursor-pointer transition-colors"
+                        title="Speed Stage Up"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Final Speed Metric */}
+                  <div className="flex flex-col items-end justify-center pl-2 shrink-0">
+                    <span
+                      className={[
+                        "text-lg font-black tabular-nums tracking-tight leading-none",
+                        p.finalSpeed > p.rawSpeed
+                          ? "text-emerald-400"
+                          : p.finalSpeed < p.rawSpeed
+                            ? "text-[#b22200]"
+                            : "text-white",
+                      ].join(" ")}
+                    >
+                      {p.finalSpeed}
+                    </span>
+                    <span className="text-[9px] text-white/20 font-medium tabular-nums mt-0.5">
+                      {p.isPlayer ? "tailored" : "base"} {p.baseSpeed}
+                    </span>
                   </div>
                 </div>
 
-                {/* Final Speed Metric */}
-                <div className="flex flex-col items-end justify-center pl-2 shrink-0">
-                  <span
-                    className={[
-                      "text-lg font-black tabular-nums tracking-tight leading-none",
-                      p.finalSpeed > p.rawSpeed
-                        ? "text-emerald-400"
-                        : p.finalSpeed < p.rawSpeed
-                          ? "text-[#b22200]"
-                          : "text-white",
-                    ].join(" ")}
-                  >
-                    {p.finalSpeed}
-                  </span>
-                  <span className="text-[9px] text-white/20 font-medium tabular-nums mt-0.5">
-                    {p.isPlayer ? "tailored" : "base"} {p.baseSpeed}
-                  </span>
+                {/* Row 2: Mobile Bottom Toolbar (Visible only on mobile) */}
+                <div className="flex items-center justify-between pt-2 border-t border-white/5 w-full sm:hidden">
+                  {/* Benchmark (Mobile) */}
+                  <div className="min-w-0">
+                    {p.isPlayer ? (
+                      <span className="text-[10px] font-bold text-sky-400">
+                        Custom SPs
+                      </span>
+                    ) : (
+                      <select
+                        value={p.benchmark}
+                        onChange={(e) =>
+                          onUpdate(p.id, { benchmark: e.target.value as any })
+                        }
+                        className="text-[10px] font-medium text-white/40 bg-[#0F1115]/50 border border-white/5 px-2 py-1 rounded-lg outline-none cursor-pointer hover:text-white/75 transition-colors"
+                      >
+                        <option value="max_plus" className="bg-[#0F1115]">
+                          Jolly/Timid Max (252 EV+)
+                        </option>
+                        <option value="max_neutral" className="bg-[#0F1115]">
+                          Neutral Max (252 EV)
+                        </option>
+                        <option value="min_neutral" className="bg-[#0F1115]">
+                          Neutral Min (0 EV)
+                        </option>
+                        <option value="min" className="bg-[#0F1115]">
+                          Trick Room Min (0 IV-)
+                        </option>
+                      </select>
+                    )}
+                  </div>
+
+                  {/* Modifiers Toggles (Mobile) */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {/* Scarf Toggle */}
+                    <button
+                      onClick={() => onUpdate(p.id, { scarf: !p.scarf })}
+                      title="Choice Scarf (1.5x)"
+                      className={[
+                        "p-1.5 rounded-lg border text-xs cursor-pointer transition-all",
+                        p.scarf
+                          ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-400"
+                          : "border-white/5 text-white/20 hover:text-white/40 hover:bg-white/5",
+                      ].join(" ")}
+                    >
+                      <HiOutlineBolt size={14} />
+                    </button>
+
+                    {/* Paralysis Toggle */}
+                    <button
+                      onClick={() => onUpdate(p.id, { paralysis: !p.paralysis })}
+                      title="Paralyzed (0.5x)"
+                      className={[
+                        "p-1.5 rounded-lg border text-xs cursor-pointer transition-all",
+                        p.paralysis
+                          ? "bg-[#b22200]/20 border-[#b22200]/40 text-[#b22200]"
+                          : "border-white/5 text-white/20 hover:text-white/40 hover:bg-white/5",
+                      ].join(" ")}
+                    >
+                      <span className="font-bold text-[9px] leading-none">
+                        PAR
+                      </span>
+                    </button>
+
+                    {/* Stat Stage Adjuster */}
+                    <div className="flex items-center bg-white/5 rounded-lg border border-white/5 overflow-hidden shrink-0">
+                      <button
+                        onClick={() =>
+                          onUpdate(p.id, { stage: Math.max(-6, p.stage - 1) })
+                        }
+                        className="px-1.5 py-1 text-white/30 hover:text-white/70 hover:bg-white/5 text-[9px] font-bold cursor-pointer transition-colors"
+                        title="Speed Stage Down"
+                      >
+                        -
+                      </button>
+                      <span
+                        className={[
+                          "px-1.5 text-[9px] font-bold tabular-nums min-w-[20px] text-center",
+                          p.stage > 0
+                            ? "text-emerald-400"
+                            : p.stage < 0
+                              ? "text-[#b22200]"
+                              : "text-white/30",
+                        ].join(" ")}
+                      >
+                        {p.stage > 0 ? `+${p.stage}` : p.stage}
+                      </span>
+                      <button
+                        onClick={() =>
+                          onUpdate(p.id, { stage: Math.min(6, p.stage + 1) })
+                        }
+                        className="px-1.5 py-1 text-white/30 hover:text-white/70 hover:bg-white/5 text-[9px] font-bold cursor-pointer transition-colors"
+                        title="Speed Stage Up"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             );

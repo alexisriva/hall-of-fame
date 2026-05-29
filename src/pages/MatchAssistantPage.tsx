@@ -14,6 +14,7 @@ import {
   getPokemonShowdownData,
   searchPokemonShowdown,
   getShowdownSpriteUrl,
+  handlePokemonSpriteError,
   type ShowdownPokemon,
 } from "../utils/pkmnDataHelper";
 import {
@@ -69,6 +70,7 @@ const MatchAssistantPage: FC = () => {
   // Lineup states
   const [playerLineup, setPlayerLineup] = useState<LineupMember[]>([]);
   const [opponentLineup, setOpponentLineup] = useState<LineupMember[]>([]);
+  const [selectedTeamId, setSelectedTeamId] = useState<string>("");
 
   // Opponent input search
   const [opponentSearch, setOpponentSearch] = useState("");
@@ -106,6 +108,7 @@ const MatchAssistantPage: FC = () => {
 
   // Load from an existing team in the store
   const handleLoadTeam = (teamId: string) => {
+    setSelectedTeamId(teamId);
     const selectedTeam = teams.find((t) => t.id === teamId);
     if (!selectedTeam) return;
 
@@ -116,7 +119,7 @@ const MatchAssistantPage: FC = () => {
 
         // Resolve Showdown data if possible for standard stats
         const sdData = getPokemonShowdownData(
-          build.species.name,
+          build.species.form || build.species.name,
           build.isShiny,
         );
 
@@ -129,13 +132,13 @@ const MatchAssistantPage: FC = () => {
 
         return {
           id: `p-${idx}-${build.id}`,
-          name: build.species.name,
-          types: build.species.types,
+          name: sdData?.name || build.species.form || build.species.name,
+          types: sdData?.types || build.species.types,
           baseSpeed: tailoredStats.spe,
           spriteUrl:
             sdData?.spriteUrl ||
             build.species.sprite ||
-            getShowdownSpriteUrl(build.species.name.toLowerCase()),
+            getShowdownSpriteUrl((build.species.form || build.species.name).toLowerCase()),
           isPlayer: true,
           isBrought: true,
           isActive: idx < 2, // Default first two active
@@ -151,15 +154,32 @@ const MatchAssistantPage: FC = () => {
     setPlayerLineup(playerMembers);
   };
 
+  // Auto-load the first team on initial mount/load if available
+  useEffect(() => {
+    if (teams.length > 0 && playerLineup.length === 0 && !selectedTeamId) {
+      const firstTeam = teams[0];
+      handleLoadTeam(firstTeam.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teams.length]);
+
   // Add Opponent species
   const handleAddOpponentSpecies = (species: ShowdownPokemon) => {
     if (opponentLineup.length >= 6) return;
+
+    // Check if we have a custom build in our team hub for this species to reuse the working custom sprite!
+    const matchingBuild = builds.find(
+      (b) =>
+        b.species &&
+        (b.species.form || b.species.name).toLowerCase() === species.name.toLowerCase(),
+    );
+
     const newMember: LineupMember = {
       id: `opp-${Date.now()}-${species.id}`,
       name: species.name,
       types: species.types,
       baseSpeed: species.baseStats.spe,
-      spriteUrl: species.spriteUrl,
+      spriteUrl: matchingBuild?.species?.sprite || species.spriteUrl,
       isPlayer: false,
       isBrought: true,
       isActive: opponentLineup.filter((p) => p.isActive).length < 2,
@@ -182,8 +202,25 @@ const MatchAssistantPage: FC = () => {
       return;
     }
     const results = searchPokemonShowdown(opponentSearch);
-    setSearchResults(results);
-  }, [opponentSearch]);
+    
+    // Enhance autocomplete results with custom sprites from player's builds if available
+    const enhancedResults = results.map((res) => {
+      const matchingBuild = builds.find(
+        (b) =>
+          b.species &&
+          (b.species.form || b.species.name).toLowerCase() === res.name.toLowerCase(),
+      );
+      if (matchingBuild?.species?.sprite) {
+        return {
+          ...res,
+          spriteUrl: matchingBuild.species.sprite,
+        };
+      }
+      return res;
+    });
+
+    setSearchResults(enhancedResults);
+  }, [opponentSearch, builds]);
 
   // Modifiers sync functions for Speed Queue
   const handleSpeedStateUpdate = (
@@ -242,6 +279,7 @@ const MatchAssistantPage: FC = () => {
     setOpponentLineup([]);
     setOpponentSearch("");
     setSelectedOpponentMeta(null);
+    setSelectedTeamId("");
   };
 
   // Aggregated speed array for the SpeedQueue component
@@ -337,8 +375,8 @@ const MatchAssistantPage: FC = () => {
               {teams.length > 0 && (
                 <div className="relative">
                   <select
+                    value={selectedTeamId}
                     onChange={(e) => handleLoadTeam(e.target.value)}
-                    defaultValue=""
                     className="bg-transparent border-none text-[11px] font-bold text-sky-400 cursor-pointer outline-none hover:text-sky-300 pr-4 appearance-none"
                   >
                     <option value="" disabled className="bg-[#0F1115]">
@@ -462,6 +500,7 @@ const MatchAssistantPage: FC = () => {
                             src={res.spriteUrl}
                             alt={res.name}
                             className="w-8 h-8 object-contain pointer-events-none"
+                            onError={(e) => handlePokemonSpriteError(e, res.name)}
                           />
                           <span className="text-white font-bold capitalize truncate">
                             {res.name}
@@ -495,6 +534,7 @@ const MatchAssistantPage: FC = () => {
                         src={p.spriteUrl}
                         alt={p.name}
                         className="w-10 h-10 object-contain pointer-events-none"
+                        onError={(e) => handlePokemonSpriteError(e, p.name)}
                       />
                       <div className="flex flex-col min-w-0">
                         <span className="text-white font-bold capitalize truncate">
@@ -561,7 +601,7 @@ const MatchAssistantPage: FC = () => {
             style={{ boxShadow: "0 12px 40px rgba(42, 55, 94, 0.08)" }}
           >
             {/* Tabs */}
-            <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 mb-5 flex-wrap">
+            <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 mb-5">
               <button
                 onClick={() => setActiveTab("speed")}
                 className={[
@@ -572,7 +612,8 @@ const MatchAssistantPage: FC = () => {
                 ].join(" ")}
               >
                 <HiOutlineBolt size={14} />
-                Speed Tiers
+                <span className="sm:inline hidden">Speed Tiers</span>
+                <span className="sm:hidden inline">Speed</span>
               </button>
 
               <button
@@ -585,7 +626,8 @@ const MatchAssistantPage: FC = () => {
                 ].join(" ")}
               >
                 <HiOutlineCpuChip size={14} />
-                Smogon Meta Profiles
+                <span className="sm:inline hidden">Smogon Meta Profiles</span>
+                <span className="sm:hidden inline">Meta</span>
               </button>
 
               <button
@@ -598,7 +640,8 @@ const MatchAssistantPage: FC = () => {
                 ].join(" ")}
               >
                 <HiOutlineSparkles size={14} />
-                2v2 Type Matrix
+                <span className="sm:inline hidden">2v2 Type Matrix</span>
+                <span className="sm:hidden inline">Matrix</span>
               </button>
             </div>
 
@@ -654,6 +697,7 @@ const MatchAssistantPage: FC = () => {
                                   src={opp.spriteUrl}
                                   alt={opp.name}
                                   className="w-6 h-6 object-contain pointer-events-none"
+                                  onError={(e) => handlePokemonSpriteError(e, opp.name)}
                                 />
                                 <span className="capitalize">{opp.name}</span>
                               </button>

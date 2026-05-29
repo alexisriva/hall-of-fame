@@ -24,20 +24,27 @@ export interface ShowdownPokemon {
  * Returns a Pokémon Showdown sprite URL based on species ID and shiny flag.
  * Uses play.pokemonshowdown.com standard assets.
  */
-export function getShowdownSpriteUrl(id: string, isShiny = false): string {
+export function getShowdownSpriteUrl(name: string, isShiny = false): string {
   // Safe default: return static dex png. 
   // Animated gifs can sometimes fail to load for newer gen custom forms, 
   // so static dex images are extremely reliable and fast.
   const folder = isShiny ? "dex-shiny" : "dex";
-  return `https://play.pokemonshowdown.com/sprites/${folder}/${id}.png`;
+  let filename = name.toLowerCase();
+  if (filename.endsWith("-mega-x")) {
+    filename = filename.replace("-mega-x", "-megax");
+  } else if (filename.endsWith("-mega-y")) {
+    filename = filename.replace("-mega-y", "-megay");
+  }
+  filename = filename.replace(/[^a-z0-9-]/g, "");
+  return `https://play.pokemonshowdown.com/sprites/${folder}/${filename}.png`;
 }
 
 /**
  * Synchronously retrieves Gen 9 Pokémon data from the Showdown engine by name or ID.
  */
 export function getPokemonShowdownData(nameOrId: string, isShiny = false): ShowdownPokemon | null {
-  const species = gen9.species.get(nameOrId);
-  if (!species) return null;
+  const species = Dex.species.get(nameOrId);
+  if (!species || !species.exists) return null;
 
   return {
     id: species.id,
@@ -52,7 +59,7 @@ export function getPokemonShowdownData(nameOrId: string, isShiny = false): Showd
       spe: species.baseStats.spe,
     },
     abilities: Object.values(species.abilities).filter(Boolean) as string[],
-    spriteUrl: getShowdownSpriteUrl(species.id, isShiny),
+    spriteUrl: getShowdownSpriteUrl(species.name, isShiny),
   };
 }
 
@@ -65,9 +72,9 @@ export function searchPokemonShowdown(query: string): ShowdownPokemon[] {
 
   const results: ShowdownPokemon[] = [];
   
-  for (const species of gen9.species) {
-    // Only return fully evolved, legal, or standard species/forms (exclude weird custom or placeholder forms)
-    if (species.isNonstandard) continue;
+  for (const species of Dex.species.all()) {
+    // Only return standard, past fully coded Showdown forms, or Megas (including custom ones like Meganium-Mega)
+    if (species.isNonstandard && species.isNonstandard !== "Past" && !species.isMega) continue;
 
     const matchesQuery = 
       species.id.includes(q) || 
@@ -80,7 +87,7 @@ export function searchPokemonShowdown(query: string): ShowdownPokemon[] {
         types: species.types,
         baseStats: species.baseStats,
         abilities: Object.values(species.abilities).filter(Boolean) as string[],
-        spriteUrl: getShowdownSpriteUrl(species.id),
+        spriteUrl: getShowdownSpriteUrl(species.name),
       });
       // Cap results for UI responsiveness
       if (results.length >= 15) break;
@@ -89,3 +96,37 @@ export function searchPokemonShowdown(query: string): ShowdownPokemon[] {
 
   return results;
 }
+
+/**
+ * Safely handles image loading errors by falling back to base species or standard placeholders.
+ */
+export function handlePokemonSpriteError(
+  e: { currentTarget: HTMLImageElement },
+  name: string
+): void {
+  const img = e.currentTarget;
+  const lowerName = name.toLowerCase();
+
+  // Try 1: If it's a Mega, Gigantamax or a special form, fall back to its base form Showdown sprite
+  if (
+    lowerName.includes("-mega") ||
+    lowerName.includes("-gmax") ||
+    lowerName.includes("-alola") ||
+    lowerName.includes("-galar") ||
+    lowerName.includes("-hisui")
+  ) {
+    const baseName = name.split("-")[0];
+    const newSrc = `https://play.pokemonshowdown.com/sprites/dex/${baseName.toLowerCase()}.png`;
+    if (img.src !== newSrc) {
+      img.src = newSrc;
+      return;
+    }
+  }
+
+  // Try 2: Fallback to a standard PokeAPI items Poke Ball icon
+  const pokeapiFallback = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png`;
+  if (img.src !== pokeapiFallback) {
+    img.src = pokeapiFallback;
+  }
+}
+

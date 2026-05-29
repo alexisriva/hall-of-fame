@@ -86,6 +86,14 @@ const SmogonThreatPanel: FC<SmogonThreatPanelProps> = ({
         </div>
       </div>
 
+      {/* Fallback Disclosure Banner */}
+      <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/15 text-[11px] text-amber-300/85 leading-relaxed shadow-sm">
+        <HiOutlineExclamationCircle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+        <p>
+          <strong>Format Note:</strong> Real-time ladder data for {formatLabel} is not yet officially published. Displayed profiles are synthesized from historical Gen 9 VGC sets and may include legacy items or EV/nature spreads.
+        </p>
+      </div>
+
       {/* Tabs */}
       {(hasStats || hasSets) && (
         <div className="flex bg-white/5 p-1 rounded-xl border border-white/5">
