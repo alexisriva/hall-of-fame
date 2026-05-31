@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import TypeIcon from "../atoms/TypeIcon";
 import { TYPES } from "../../utils/constants";
+import { HiOutlinePencilSquare, HiOutlineTrash } from "react-icons/hi2";
 import megaIcon from "../../assets/mega.png";
 import gmaxIcon from "../../assets/gmax.png";
 
@@ -15,6 +16,8 @@ interface PokemonCardProps {
   teraType?: string;
   form?: string;
   onClick?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 const PokemonCard: FC<PokemonCardProps> = ({
@@ -24,6 +27,8 @@ const PokemonCard: FC<PokemonCardProps> = ({
   teraType,
   form,
   onClick,
+  onEdit,
+  onDelete,
 }) => {
   const isMega = form?.toLowerCase().endsWith("-mega");
   const isGigantamax = form?.toLowerCase().endsWith("-gmax");
@@ -41,13 +46,35 @@ const PokemonCard: FC<PokemonCardProps> = ({
         transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
       }}
     >
-      {/* Mega/Gmax Indicator */}
-      {(isMega || isGigantamax) && (
-        <div className="absolute top-3 right-3 z-20">
-          {isMega && <img src={megaIcon} alt="Mega" width={28} className="drop-shadow-md" />}
-          {isGigantamax && <img src={gmaxIcon} alt="Gmax" width={28} className="drop-shadow-md" />}
+      {/* Action buttons (top right) */}
+      {(onEdit || onDelete) && (
+        <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {onEdit && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="p-1.5 rounded-lg text-white/20 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+            >
+              <HiOutlinePencilSquare size={16} />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="p-1.5 rounded-lg text-white/20 hover:text-[#b22200] hover:bg-[#b22200]/10 transition-colors cursor-pointer"
+            >
+              <HiOutlineTrash size={16} />
+            </button>
+          )}
         </div>
       )}
+
+
 
       {/* Image area — overflows the top of the card */}
       <div className="relative flex items-end justify-center h-64 overflow-visible">
@@ -69,6 +96,9 @@ const PokemonCard: FC<PokemonCardProps> = ({
           {types.length > 0 &&
             types.map((type) => <TypeIcon key={type} type={type} />)}
           {teraType && <TypeIcon type={teraType} size={30} tera />}
+          {(isMega || isGigantamax) && <span className="text-white/30 font-bold mx-0.5">·</span>}
+          {isMega && <img src={megaIcon} alt="Mega" width={20} className="drop-shadow-md" />}
+          {isGigantamax && <img src={gmaxIcon} alt="Gmax" width={28} className="drop-shadow-md" />}
         </div>
       </div>
     </div>

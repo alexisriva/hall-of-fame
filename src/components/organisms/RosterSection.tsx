@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useGameStore } from "../../store/gameStore";
 import PokemonCard from "../molecules/PokemonCard";
 import Modal from "../molecules/Modal";
+import BuildManager from "./BuildManager";
 import Tag from "../atoms/Tag";
 import TypeIcon from "../atoms/TypeIcon";
 import Loading from "../atoms/Loading";
@@ -43,6 +44,22 @@ const RosterSection: FC<RosterSectionProps> = ({
   const [pasteText, setPasteText] = useState("");
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState("");
+
+  const [buildManagerOpen, setBuildManagerOpen] = useState(false);
+  const [editingBuild, setEditingBuild] = useState<PokemonBuild | undefined>(undefined);
+  const [pendingSpecies, setPendingSpecies] = useState("");
+
+  const handleEditBuild = (build: PokemonBuild) => {
+    setPendingSpecies(build.species?.form ?? build.species?.name ?? "");
+    setEditingBuild(build);
+    setBuildManagerOpen(true);
+  };
+
+  const closeBuildManager = () => {
+    setBuildManagerOpen(false);
+    setEditingBuild(undefined);
+    setPendingSpecies("");
+  };
 
   const members = memberIds
     .map((id) => builds.find((b) => b.id === id))
@@ -175,7 +192,9 @@ const RosterSection: FC<RosterSectionProps> = ({
             types={m.species?.types}
             teraType={m.teraType}
             form={m.species?.form}
-            onClick={onRemove ? () => onRemove(m.id) : undefined}
+            onClick={() => handleEditBuild(m)}
+            onEdit={() => handleEditBuild(m)}
+            onDelete={onRemove ? () => onRemove(m.id) : undefined}
           />
         ))}
 
@@ -292,6 +311,26 @@ const RosterSection: FC<RosterSectionProps> = ({
           </div>
         )}
       </Modal>
+
+      {/* Build Manager Modal */}
+      {pendingSpecies && (
+        <Modal
+          isOpen={buildManagerOpen}
+          title={
+            editingBuild
+              ? `Edit — ${editingBuild.name}`
+              : `New Build — ${pendingSpecies}`
+          }
+          onClose={closeBuildManager}
+          size="lg"
+        >
+          <BuildManager
+            species={pendingSpecies}
+            initialBuild={editingBuild}
+            onClose={closeBuildManager}
+          />
+        </Modal>
+      )}
     </section>
   );
 };

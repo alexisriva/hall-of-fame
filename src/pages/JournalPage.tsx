@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   HiOutlineBolt,
@@ -31,21 +31,60 @@ const JournalPage = () => {
     .filter(Boolean) as PokemonBuild[];
 
   const [leads, setLeads] = useState<MatchLead[]>(team?.leads || []);
-  const [counters, setCounters] = useState<MatchCounter[]>(team?.counters || []);
+  const [counters, setCounters] = useState<MatchCounter[]>(
+    team?.counters || [],
+  );
   const [insights, setInsights] = useState(team?.additionalInsights || "");
+  const [name, setName] = useState(team?.name || "");
 
   const [leadModalOpen, setLeadModalOpen] = useState(false);
   const [counterModalOpen, setCounterModalOpen] = useState(false);
   const [editingLeadIdx, setEditingLeadIdx] = useState<number | null>(null);
-  const [editingCounterIdx, setEditingCounterIdx] = useState<number | null>(null);
+  const [editingCounterIdx, setEditingCounterIdx] = useState<number | null>(
+    null,
+  );
   const [deletingLeadIdx, setDeletingLeadIdx] = useState<number | null>(null);
-  const [deletingCounterIdx, setDeletingCounterIdx] = useState<number | null>(null);
+  const [deletingCounterIdx, setDeletingCounterIdx] = useState<number | null>(
+    null,
+  );
+
+  // Sync state if navigation target (id) changes
+  useEffect(() => {
+    if (team) {
+      setName(team.name);
+      setLeads(team.leads || []);
+      setCounters(team.counters || []);
+      setInsights(team.additionalInsights || "");
+    }
+  }, [id]);
+
+  // Debounced autosave for team name
+  useEffect(() => {
+    if (!team || name === team.name) return;
+    const timer = setTimeout(() => {
+      updateTeam(team.id, { name });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [name, team?.id, team?.name, updateTeam]);
+
+  // Debounced autosave for additional insights
+  useEffect(() => {
+    if (!team || insights === team.additionalInsights) return;
+    const timer = setTimeout(() => {
+      updateTeam(team.id, { additionalInsights: insights });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [insights, team?.id, team?.additionalInsights, updateTeam]);
 
   if (!team) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-3">
         <span className="text-white/20 text-sm">Team not found.</span>
-        <Button label="Back to Teams" variant="secondary" onClick={() => navigate("/team-hub")} />
+        <Button
+          label="Back to Teams"
+          variant="secondary"
+          onClick={() => navigate("/team-hub")}
+        />
       </div>
     );
   }
@@ -61,31 +100,55 @@ const JournalPage = () => {
   };
 
   const handleSaveLead = (lead: MatchLead) => {
+    let newLeads;
     if (editingLeadIdx !== null) {
-      setLeads((prev) => prev.map((l, i) => (i === editingLeadIdx ? lead : l)));
+      newLeads = leads.map((l, i) => (i === editingLeadIdx ? lead : l));
     } else {
-      setLeads((prev) => [...prev, lead]);
+      newLeads = [...leads, lead];
     }
+    setLeads(newLeads);
+    updateTeam(team.id, { leads: newLeads });
     closeLeadModal();
   };
 
   const handleDeleteLead = (idx: number) => {
-    setLeads((prev) => prev.filter((_, i) => i !== idx));
+    const newLeads = leads.filter((_, i) => i !== idx);
+    setLeads(newLeads);
+    updateTeam(team.id, { leads: newLeads });
   };
 
   const handleSaveCounter = (counter: MatchCounter) => {
+    let newCounters;
     if (editingCounterIdx !== null) {
-      setCounters((prev) =>
-        prev.map((c, i) => (i === editingCounterIdx ? counter : c)),
+      newCounters = counters.map((c, i) =>
+        i === editingCounterIdx ? counter : c,
       );
     } else {
-      setCounters((prev) => [...prev, counter]);
+      newCounters = [...counters, counter];
     }
+    setCounters(newCounters);
+    updateTeam(team.id, { counters: newCounters });
     closeCounterModal();
   };
 
   const handleDeleteCounter = (idx: number) => {
-    setCounters((prev) => prev.filter((_, i) => i !== idx));
+    const newCounters = counters.filter((_, i) => i !== idx);
+    setCounters(newCounters);
+    updateTeam(team.id, { counters: newCounters });
+  };
+
+  const handleNameBlur = () => {
+    if (name.trim() === "") {
+      setName(team.name);
+    } else {
+      updateTeam(team.id, { name: name.trim() });
+    }
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    }
   };
 
   return (
@@ -103,9 +166,15 @@ const JournalPage = () => {
           <span className="text-xs text-[#b22200] font-semibold uppercase tracking-[0.2em]">
             Team {team.id}
           </span>
-          <h1 className="text-2xl md:text-4xl font-bold text-white tracking-tight leading-none">
-            {team.name}
-          </h1>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={handleNameBlur}
+            onKeyDown={handleNameKeyDown}
+            className="text-2xl md:text-4xl font-bold text-white tracking-tight leading-none bg-transparent border-none outline-none focus:outline-none focus:ring-0 p-0 m-0 w-full placeholder:text-white/20"
+            placeholder="Enter team name..."
+          />
         </div>
       </header>
 
@@ -148,12 +217,17 @@ const JournalPage = () => {
             key={i}
             pokemon={lead.pokemon}
             description={lead.notes}
-            onDescriptionChange={(notes) =>
-              setLeads((prev) =>
-                prev.map((l, idx) => (idx === i ? { ...l, notes } : l)),
-              )
-            }
-            onEdit={() => { setEditingLeadIdx(i); setLeadModalOpen(true); }}
+            onDescriptionChange={(notes) => {
+              const newLeads = leads.map((l, idx) =>
+                idx === i ? { ...l, notes } : l,
+              );
+              setLeads(newLeads);
+              updateTeam(team.id, { leads: newLeads });
+            }}
+            onEdit={() => {
+              setEditingLeadIdx(i);
+              setLeadModalOpen(true);
+            }}
             onDelete={() => setDeletingLeadIdx(i)}
           />
         ))}
@@ -177,12 +251,17 @@ const JournalPage = () => {
             title={counter.pokemon.species!.name}
             tag={{ label: "Threat", variant: "danger" }}
             description={counter.notes}
-            onDescriptionChange={(notes) =>
-              setCounters((prev) =>
-                prev.map((c, idx) => (idx === i ? { ...c, notes } : c)),
-              )
-            }
-            onEdit={() => { setEditingCounterIdx(i); setCounterModalOpen(true); }}
+            onDescriptionChange={(notes) => {
+              const newCounters = counters.map((c, idx) =>
+                idx === i ? { ...c, notes } : c,
+              );
+              setCounters(newCounters);
+              updateTeam(team.id, { counters: newCounters });
+            }}
+            onEdit={() => {
+              setEditingCounterIdx(i);
+              setCounterModalOpen(true);
+            }}
             onDelete={() => setDeletingCounterIdx(i)}
           />
         ))}
@@ -196,17 +275,25 @@ const JournalPage = () => {
       {/* Lead Modal */}
       <Modal
         isOpen={leadModalOpen}
-        title={editingLeadIdx !== null ? "Edit Strategic Lead" : "Add Strategic Lead"}
+        title={
+          editingLeadIdx !== null ? "Edit Strategic Lead" : "Add Strategic Lead"
+        }
         onClose={closeLeadModal}
       >
         <MatchLeadForm
-          roster={team.pokemon
-            .map((id) => builds.find((b) => b.id === id))
-            .filter(Boolean) as PokemonBuild[]}
+          roster={
+            team.pokemon
+              .map((id) => builds.find((b) => b.id === id))
+              .filter(Boolean) as PokemonBuild[]
+          }
           onSubmit={handleSaveLead}
           onCancel={closeLeadModal}
-          initialPokemon={editingLeadIdx !== null ? leads[editingLeadIdx].pokemon : undefined}
-          initialNotes={editingLeadIdx !== null ? leads[editingLeadIdx].notes : undefined}
+          initialPokemon={
+            editingLeadIdx !== null ? leads[editingLeadIdx].pokemon : undefined
+          }
+          initialNotes={
+            editingLeadIdx !== null ? leads[editingLeadIdx].notes : undefined
+          }
         />
       </Modal>
 
@@ -227,7 +314,8 @@ const JournalPage = () => {
         question="Delete this critical threat? This action cannot be undone."
         onCancel={() => setDeletingCounterIdx(null)}
         onConfirm={() => {
-          if (deletingCounterIdx !== null) handleDeleteCounter(deletingCounterIdx);
+          if (deletingCounterIdx !== null)
+            handleDeleteCounter(deletingCounterIdx);
           setDeletingCounterIdx(null);
         }}
       />
@@ -235,14 +323,26 @@ const JournalPage = () => {
       {/* Counter Modal */}
       <Modal
         isOpen={counterModalOpen}
-        title={editingCounterIdx !== null ? "Edit Critical Threat" : "Add Critical Threat"}
+        title={
+          editingCounterIdx !== null
+            ? "Edit Critical Threat"
+            : "Add Critical Threat"
+        }
         onClose={closeCounterModal}
       >
         <MatchCounterForm
           onSubmit={handleSaveCounter}
           onCancel={closeCounterModal}
-          initialSpeciesName={editingCounterIdx !== null ? counters[editingCounterIdx].pokemon.species?.name : undefined}
-          initialNotes={editingCounterIdx !== null ? counters[editingCounterIdx].notes : undefined}
+          initialSpeciesName={
+            editingCounterIdx !== null
+              ? counters[editingCounterIdx].pokemon.species?.name
+              : undefined
+          }
+          initialNotes={
+            editingCounterIdx !== null
+              ? counters[editingCounterIdx].notes
+              : undefined
+          }
         />
       </Modal>
     </div>
