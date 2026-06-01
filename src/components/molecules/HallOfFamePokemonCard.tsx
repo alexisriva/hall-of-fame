@@ -30,27 +30,7 @@ const HallOfFamePokemonCard: FC<HallOfFamePokemonCardProps> = ({
       className="relative overflow-hidden rounded-2xl bg-[#161C29] px-5 pt-5 pb-4 flex flex-col gap-3 min-h-[200px]"
       style={{ boxShadow: "0 12px 40px rgba(42, 55, 94, 0.08)" }}
     >
-      {/* Mega/Gmax Indicator */}
-      {(isMega || isGigantamax) && (
-        <div className="absolute top-4 right-4 z-20">
-          {isMega && (
-            <img
-              src={megaIcon}
-              alt="Mega"
-              width={28}
-              className="drop-shadow-md"
-            />
-          )}
-          {isGigantamax && (
-            <img
-              src={gmaxIcon}
-              alt="Gmax"
-              width={28}
-              className="drop-shadow-md"
-            />
-          )}
-        </div>
-      )}
+
 
       {/* Sprite top-left */}
       {sprite && (
@@ -78,6 +58,9 @@ const HallOfFamePokemonCard: FC<HallOfFamePokemonCardProps> = ({
             <TypeIcon key={type} type={type} />
           ))}
           {build.teraType && <TypeIcon type={build.teraType} size={28} tera />}
+          {(isMega || isGigantamax) && <span className="text-white/30 font-bold mx-0.5">·</span>}
+          {isMega && <img src={megaIcon} alt="Mega" width={20} className="drop-shadow-md" />}
+          {isGigantamax && <img src={gmaxIcon} alt="Gmax" width={28} className="drop-shadow-md" />}
         </div>
       )}
 

@@ -193,7 +193,6 @@ const RosterSection: FC<RosterSectionProps> = ({
             teraType={m.teraType}
             form={m.species?.form}
             onClick={() => handleEditBuild(m)}
-            onEdit={() => handleEditBuild(m)}
             onDelete={onRemove ? () => onRemove(m.id) : undefined}
           />
         ))}

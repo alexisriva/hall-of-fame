@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import TypeIcon from "../atoms/TypeIcon";
 import { TYPES } from "../../utils/constants";
-import { HiOutlinePencilSquare, HiOutlineTrash } from "react-icons/hi2";
+import { HiOutlineTrash } from "react-icons/hi2";
 import megaIcon from "../../assets/mega.png";
 import gmaxIcon from "../../assets/gmax.png";
 
@@ -16,7 +16,6 @@ interface PokemonCardProps {
   teraType?: string;
   form?: string;
   onClick?: () => void;
-  onEdit?: () => void;
   onDelete?: () => void;
 }
 
@@ -27,7 +26,6 @@ const PokemonCard: FC<PokemonCardProps> = ({
   teraType,
   form,
   onClick,
-  onEdit,
   onDelete,
 }) => {
   const isMega = form?.toLowerCase().endsWith("-mega");
@@ -47,30 +45,17 @@ const PokemonCard: FC<PokemonCardProps> = ({
       }}
     >
       {/* Action buttons (top right) */}
-      {(onEdit || onDelete) && (
+      {onDelete && (
         <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {onEdit && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit();
-              }}
-              className="p-1.5 rounded-lg text-white/20 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-            >
-              <HiOutlinePencilSquare size={16} />
-            </button>
-          )}
-          {onDelete && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete();
-              }}
-              className="p-1.5 rounded-lg text-white/20 hover:text-[#b22200] hover:bg-[#b22200]/10 transition-colors cursor-pointer"
-            >
-              <HiOutlineTrash size={16} />
-            </button>
-          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            className="p-1.5 rounded-lg text-white/20 hover:text-[#b22200] hover:bg-[#b22200]/10 transition-colors cursor-pointer"
+          >
+            <HiOutlineTrash size={16} />
+          </button>
         </div>
       )}
 
