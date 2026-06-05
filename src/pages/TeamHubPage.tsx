@@ -7,11 +7,18 @@ import TextInput from "../components/atoms/TextInput";
 import Modal from "../components/molecules/Modal";
 import Dialog from "../components/molecules/Dialog";
 import TeamCard from "../components/molecules/TeamCard";
-import { HiOutlineTrash, HiOutlineDocumentDuplicate } from "react-icons/hi2";
+import {
+  HiOutlineTrash,
+  HiOutlineDocumentDuplicate,
+  HiOutlineShare,
+  HiOutlineCheck,
+} from "react-icons/hi2";
 import { REGULATIONS } from "../utils/regulations";
+import { exportTeamToPokepaste } from "../utils/parsePokepaste";
 
 const TeamHubPage = () => {
   const teams = useGameStore((s) => s.teams);
+  const builds = useGameStore((s) => s.builds);
   const addTeam = useGameStore((s) => s.addTeam);
   const deleteTeam = useGameStore((s) => s.deleteTeam);
   const navigate = useNavigate();
@@ -20,6 +27,7 @@ const TeamHubPage = () => {
   const [teamName, setTeamName] = useState("");
   const [regulation, setRegulation] = useState<string>(REGULATIONS[0]);
   const [deletingTeamId, setDeletingTeamId] = useState<string | null>(null);
+  const [copiedTeamId, setCopiedTeamId] = useState<string | null>(null);
 
   const handleCreate = () => {
     if (!teamName.trim()) return;
@@ -55,6 +63,16 @@ const TeamHubPage = () => {
       wins: 0,
       losses: 0,
     });
+  };
+
+  const handleShareTeam = (targetTeam: PokemonTeam) => {
+    const roster = targetTeam.pokemon
+      .map((id) => builds.find((b) => b.id === id))
+      .filter(Boolean) as PokemonBuild[];
+    const paste = exportTeamToPokepaste(roster);
+    navigator.clipboard.writeText(paste);
+    setCopiedTeamId(targetTeam.id);
+    setTimeout(() => setCopiedTeamId(null), 2000);
   };
 
   return (
@@ -94,6 +112,20 @@ const TeamHubPage = () => {
                 onClick={() => navigate(`/team-hub/${team.id}`)}
               />
               <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-10">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleShareTeam(team);
+                  }}
+                  className="p-1.5 rounded-lg text-white/20 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                  title="Copy PokePaste to Clipboard"
+                >
+                  {copiedTeamId === team.id ? (
+                    <HiOutlineCheck className="text-emerald-400" size={15} />
+                  ) : (
+                    <HiOutlineShare size={15} />
+                  )}
+                </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

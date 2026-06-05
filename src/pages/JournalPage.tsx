@@ -6,7 +6,10 @@ import {
   HiOutlineLightBulb,
   HiOutlineChartBar,
   HiArrowLongLeft,
+  HiOutlineShare,
+  HiOutlineCheck,
 } from "react-icons/hi2";
+import { exportTeamToPokepaste } from "../utils/parsePokepaste";
 import RosterSection from "../components/organisms/RosterSection";
 import WeaknessIndex from "../components/molecules/WeaknessIndex";
 import SubsectionCard from "../components/organisms/SubsectionCard";
@@ -47,6 +50,15 @@ const JournalPage = () => {
   const [deletingCounterIdx, setDeletingCounterIdx] = useState<number | null>(
     null,
   );
+  const [copied, setCopied] = useState(false);
+
+  const handleShareTeam = () => {
+    if (!team) return;
+    const paste = exportTeamToPokepaste(roster);
+    navigator.clipboard.writeText(paste);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // Sync state if navigation target (id) changes
   useEffect(() => {
@@ -55,6 +67,7 @@ const JournalPage = () => {
       setLeads(team.leads || []);
       setCounters(team.counters || []);
       setInsights(team.additionalInsights || "");
+      setCopied(false);
     }
   }, [id]);
 
@@ -271,6 +284,16 @@ const JournalPage = () => {
       <SubsectionCard title="Additional Insights" icon={<HiOutlineLightBulb />}>
         <TextArea value={insights} onChange={setInsights} rows={6} />
       </SubsectionCard>
+
+      {/* Share Team Section */}
+      <div className="flex justify-center py-6 border-t border-white/5 mt-4">
+        <Button
+          label={copied ? "Copied to clipboard!" : "Share your team!"}
+          variant="primary"
+          icon={copied ? <HiOutlineCheck size={16} /> : <HiOutlineShare size={16} />}
+          onClick={handleShareTeam}
+        />
+      </div>
 
       {/* Lead Modal */}
       <Modal

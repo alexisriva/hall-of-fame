@@ -131,3 +131,69 @@ export function parsePokepaste(text: string): Partial<PokemonBuild> & {
 
   return result;
 }
+
+export function exportTeamToPokepaste(pokemonList: PokemonBuild[]): string {
+  return pokemonList
+    .map((build) => {
+      const lines: string[] = [];
+
+      const name = build.species?.form || build.name;
+      const item = build.item ? ` @ ${build.item}` : "";
+      lines.push(`${name}${item}`);
+
+      if (build.ability) {
+        const formattedAbility = build.ability
+          .split("-")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+        lines.push(`Ability: ${formattedAbility}`);
+      }
+
+      lines.push("Level: 50");
+
+      if (build.isShiny) {
+        lines.push("Shiny: Yes");
+      }
+
+      if (build.teraType) {
+        const formattedTera = build.teraType.charAt(0).toUpperCase() + build.teraType.slice(1).toLowerCase();
+        lines.push(`Tera Type: ${formattedTera}`);
+      }
+
+      const spsParts: string[] = [];
+      const statLabels: { key: keyof Stats; label: string }[] = [
+        { key: "hp", label: "HP" },
+        { key: "atk", label: "Atk" },
+        { key: "def", label: "Def" },
+        { key: "spa", label: "SpA" },
+        { key: "spd", label: "SpD" },
+        { key: "spe", label: "Spe" },
+      ];
+      statLabels.forEach(({ key, label }) => {
+        const val = build.sps[key];
+        if (val > 0) {
+          spsParts.push(`${val} ${label}`);
+        }
+      });
+      if (spsParts.length > 0) {
+        lines.push(`SPs: ${spsParts.join(" / ")}`);
+      }
+
+      if (build.nature) {
+        lines.push(`${build.nature} Nature`);
+      }
+
+      build.moves.forEach((move) => {
+        if (move.trim()) {
+          const formattedMove = move
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+          lines.push(`- ${formattedMove}`);
+        }
+      });
+
+      return lines.join("\n");
+    })
+    .join("\n\n");
+}
