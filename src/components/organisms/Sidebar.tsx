@@ -69,7 +69,7 @@ const Sidebar: FC = () => {
               transitionDelay: collapsed ? "0ms" : "120ms",
             }}
           >
-            Hall Of Fame
+            Hall of Fame
           </p>
         </div>
         <p

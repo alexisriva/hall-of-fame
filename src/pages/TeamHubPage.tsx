@@ -7,7 +7,7 @@ import TextInput from "../components/atoms/TextInput";
 import Modal from "../components/molecules/Modal";
 import Dialog from "../components/molecules/Dialog";
 import TeamCard from "../components/molecules/TeamCard";
-import { HiOutlineTrash } from "react-icons/hi2";
+import { HiOutlineTrash, HiOutlineDocumentDuplicate } from "react-icons/hi2";
 import { REGULATIONS } from "../utils/regulations";
 
 const TeamHubPage = () => {
@@ -36,6 +36,25 @@ const TeamHubPage = () => {
     setTeamName("");
     setRegulation(REGULATIONS[0]);
     setCreateOpen(false);
+  };
+
+  const handleCopyTeam = (targetTeam: PokemonTeam) => {
+    addTeam({
+      name: `Copy of ${targetTeam.name}`,
+      regulation: targetTeam.regulation,
+      pokemon: [...targetTeam.pokemon],
+      leads: targetTeam.leads.map((l) => ({
+        pokemon: [...l.pokemon],
+        notes: l.notes,
+      })),
+      counters: targetTeam.counters.map((c) => ({
+        pokemon: { ...c.pokemon },
+        notes: c.notes,
+      })),
+      additionalInsights: targetTeam.additionalInsights,
+      wins: 0,
+      losses: 0,
+    });
   };
 
   return (
@@ -74,15 +93,28 @@ const TeamHubPage = () => {
                 team={team}
                 onClick={() => navigate(`/team-hub/${team.id}`)}
               />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setDeletingTeamId(team.id);
-                }}
-                className="absolute top-3 right-3 p-1.5 rounded-lg text-white/20 hover:text-[#b22200] hover:bg-[#b22200]/10 transition-colors opacity-0 group-hover/card:opacity-100 cursor-pointer"
-              >
-                <HiOutlineTrash size={15} />
-              </button>
+              <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-10">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopyTeam(team);
+                  }}
+                  className="p-1.5 rounded-lg text-white/20 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                  title="Copy Team"
+                >
+                  <HiOutlineDocumentDuplicate size={15} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeletingTeamId(team.id);
+                  }}
+                  className="p-1.5 rounded-lg text-white/20 hover:text-[#b22200] hover:bg-[#b22200]/10 transition-colors cursor-pointer"
+                  title="Delete Team"
+                >
+                  <HiOutlineTrash size={15} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
