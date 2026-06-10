@@ -6,11 +6,14 @@ import TextInput from "../atoms/TextInput";
 import Slider from "../atoms/Slider";
 import Loading from "../atoms/Loading";
 import MoveAutocomplete from "../molecules/MoveAutocomplete";
+import MoveCard from "../molecules/MoveCard";
 import StatsViewer from "../molecules/StatsViewer";
 import { NATURES, STATS, TYPES } from "../../utils/constants";
 import { capitalize, resolveBestSprite } from "../../utils/helpers";
 import { parsePokepaste } from "../../utils/parsePokepaste";
 import { reduceStats } from "../../utils/statsReducer";
+import { getPokemonLearnset } from "../../utils/pkmnDataHelper";
+
 
 const selectCls =
   "w-full rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 appearance-none cursor-pointer transition-all";
@@ -63,6 +66,24 @@ const BuildManager: FC<BuildManagerProps> = ({
     };
     updateSprite();
   }, [data, localBuild.isShiny]);
+
+  const [availableMoves, setAvailableMoves] = useState<string[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    async function loadMoves() {
+      if (species) {
+        const moves = await getPokemonLearnset(species);
+        if (active) {
+          setAvailableMoves(moves);
+        }
+      }
+    }
+    loadMoves();
+    return () => {
+      active = false;
+    };
+  }, [species]);
 
   const handleStatChange = (stat: (typeof STATS)[number], val: number) => {
     let newVal = Math.max(0, Math.min(32, val));
@@ -319,23 +340,36 @@ const BuildManager: FC<BuildManagerProps> = ({
             <div className="flex flex-col gap-1.5">
               <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
                 Moveset{" "}
-                {isLoading && (
+                {isLoading && availableMoves.length === 0 && (
                   <span className="lowercase text-[10px] animate-pulse">
                     (Loading Suggestions...)
                   </span>
                 )}
               </span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {localBuild.moves.map((move, i) => (
-                  <MoveAutocomplete
-                    key={i}
-                    value={move}
-                    onChange={(val) => handleMoveChange(i, val)}
-                    availableMoves={data?.moves.map((m) => m.move.name) ?? []}
-                    placeholder={`Move ${i + 1}`}
-                    disabled={isLoading}
-                  />
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {localBuild.moves.map((move, i) => {
+                  const hasMove = move && move.trim() !== "";
+                  return hasMove ? (
+                    <MoveCard
+                      key={i}
+                      moveName={move}
+                      onClear={() => handleMoveChange(i, "")}
+                    />
+                  ) : (
+                    <MoveAutocomplete
+                      key={i}
+                      value={move}
+                      onChange={(val) => handleMoveChange(i, val)}
+                      availableMoves={
+                        availableMoves.length > 0
+                          ? availableMoves
+                          : (data?.moves.map((m) => m.move.name) ?? [])
+                      }
+                      placeholder={`Move ${i + 1}`}
+                      disabled={isLoading && availableMoves.length === 0}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>

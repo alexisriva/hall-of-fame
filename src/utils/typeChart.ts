@@ -75,3 +75,23 @@ export function getEffectiveness(attackType: string, defType: string): number {
 export function getDefensiveMultiplier(defTypes: string[], attackType: string): number {
   return defTypes.reduce((acc, dt) => acc * getEffectiveness(attackType, dt), 1);
 }
+
+/** Returns the list of defending types that take 2x damage from attackType. */
+export function getSuperEffectiveTargets(attackType: string): string[] {
+  const att = attackType.toLowerCase();
+  return SUPER_EFFECTIVE[att] || [];
+}
+
+/** Returns all types that resist or are immune to attackType (defending multiplier <= 0.5). */
+export function getResistTypes(attackType: string): string[] {
+  const att = attackType.toLowerCase();
+  const results: string[] = [];
+  for (const defType of ALL_TYPES) {
+    if (getEffectiveness(att, defType) <= 0.5) {
+      results.push(defType);
+    }
+  }
+  return results;
+}
+
+

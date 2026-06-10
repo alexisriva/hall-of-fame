@@ -130,3 +130,60 @@ export function handlePokemonSpriteError(
   }
 }
 
+export interface ShowdownMove {
+  name: string;
+  category: "Physical" | "Special" | "Status";
+  basePower: number;
+  type: string;
+  desc?: string;
+  shortDesc?: string;
+}
+
+/**
+ * Retrieves Move details synchronously from the Showdown Dex.
+ */
+export function getMoveShowdownData(nameOrId: string): ShowdownMove | null {
+  if (!nameOrId) return null;
+  const move = Dex.moves.get(nameOrId);
+  if (!move || !move.exists) return null;
+
+  return {
+    name: move.name,
+    category: move.category as "Physical" | "Special" | "Status",
+    basePower: move.basePower,
+    type: move.type,
+    desc: move.desc,
+    shortDesc: move.shortDesc,
+  };
+}
+
+/**
+ * Asynchronously retrieves Gen 9 learnset for a species.
+ */
+export async function getPokemonLearnset(nameOrId: string): Promise<string[]> {
+  if (!nameOrId) return [];
+  const species = Dex.species.get(nameOrId);
+  if (!species || !species.exists) return [];
+
+  let learnsetData = await gen9.learnsets.get(species.id);
+  // Fall back to base species if learnset is empty/missing
+  if ((!learnsetData || !learnsetData.learnset) && species.baseSpecies) {
+    const baseId = species.baseSpecies.toLowerCase().replace(/[^a-z0-9]/g, "");
+    learnsetData = await gen9.learnsets.get(baseId);
+  }
+
+  if (!learnsetData || !learnsetData.learnset) return [];
+
+  const movesList: string[] = [];
+  for (const moveId of Object.keys(learnsetData.learnset)) {
+    const move = gen9.moves.get(moveId);
+    if (move && move.exists) {
+      movesList.push(move.name);
+    }
+  }
+
+  // Sort alphabetically for clean UI presentation
+  return movesList.sort();
+}
+
+

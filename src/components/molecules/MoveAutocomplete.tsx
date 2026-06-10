@@ -1,4 +1,4 @@
-import { useState, type FC } from "react";
+import { useState, type FC, type KeyboardEvent } from "react";
 import { capitalize } from "../../utils/helpers";
 
 interface MoveAutocompleteProps {
@@ -28,6 +28,32 @@ const MoveAutocomplete: FC<MoveAutocompleteProps> = ({
           .filter((m) => m.toLowerCase().includes(query.toLowerCase()))
           .slice(0, 10);
 
+  const handleBlur = () => {
+    setTimeout(() => {
+      setShow(false);
+      const trimmed = query.trim();
+      const match = availableMoves.find(
+        (m) => m.toLowerCase() === trimmed.toLowerCase()
+      );
+      onChange(match || trimmed);
+    }, 200);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (filtered.length > 0) {
+        const selected = capitalize(filtered[0].replace(/-/g, " "));
+        setQuery(selected);
+        onChange(selected);
+      } else {
+        onChange(query.trim());
+      }
+      setShow(false);
+      e.currentTarget.blur();
+    }
+  };
+
   return (
     <div className="relative">
       <input
@@ -36,11 +62,11 @@ const MoveAutocomplete: FC<MoveAutocompleteProps> = ({
         onChange={(e) => {
           const val = capitalize(e.target.value.replace(/-/g, " "));
           setQuery(val);
-          onChange(val);
           setShow(true);
         }}
         onFocus={() => setShow(true)}
-        onBlur={() => setTimeout(() => setShow(false), 200)}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={`w-full rounded-xl bg-[#161C29] px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none border-none focus:ring-1 focus:ring-[#b22200]/50 transition-all ${
           disabled ? "opacity-50 cursor-not-allowed" : ""
@@ -70,3 +96,4 @@ const MoveAutocomplete: FC<MoveAutocompleteProps> = ({
 };
 
 export default MoveAutocomplete;
+

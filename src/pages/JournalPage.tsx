@@ -4,14 +4,16 @@ import {
   HiOutlineBolt,
   HiOutlineExclamationTriangle,
   HiOutlineLightBulb,
-  HiOutlineChartBar,
   HiArrowLongLeft,
   HiOutlineShare,
   HiOutlineCheck,
+  HiOutlineSparkles,
+  HiOutlineShieldCheck,
 } from "react-icons/hi2";
 import { exportTeamToPokepaste } from "../utils/parsePokepaste";
 import RosterSection from "../components/organisms/RosterSection";
-import WeaknessIndex from "../components/molecules/WeaknessIndex";
+import OffensiveCoverage from "../components/molecules/OffensiveCoverage";
+import DefensiveCoverage from "../components/molecules/DefensiveCoverage";
 import SubsectionCard from "../components/organisms/SubsectionCard";
 import AnalysisCard from "../components/molecules/AnalysisCard";
 import Modal from "../components/molecules/Modal";
@@ -21,6 +23,8 @@ import MatchCounterForm from "../components/molecules/MatchCounterForm";
 import Button from "../components/atoms/Button";
 import TextArea from "../components/atoms/TextArea";
 import { useGameStore } from "../store/gameStore";
+
+
 
 const JournalPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -208,9 +212,15 @@ const JournalPage = () => {
         }
       />
 
-      {/* Weakness Index */}
-      <SubsectionCard title="Weakness Index" icon={<HiOutlineChartBar />}>
-        <WeaknessIndex members={roster} />
+
+      {/* Offensive Coverage */}
+      <SubsectionCard title="Offensive Coverage" icon={<HiOutlineSparkles />}>
+        <OffensiveCoverage members={roster} />
+      </SubsectionCard>
+
+      {/* Defensive Coverage */}
+      <SubsectionCard title="Defensive Coverage" icon={<HiOutlineShieldCheck />}>
+        <DefensiveCoverage members={roster} />
       </SubsectionCard>
 
       {/* Strategic Leads */}
