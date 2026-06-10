@@ -51,11 +51,11 @@ const TeamHubPage = () => {
       name: `Copy of ${targetTeam.name}`,
       regulation: targetTeam.regulation,
       pokemon: [...targetTeam.pokemon],
-      leads: targetTeam.leads.map((l) => ({
+      leads: (targetTeam.leads || []).map((l) => ({
         pokemon: [...l.pokemon],
         notes: l.notes,
       })),
-      counters: targetTeam.counters.map((c) => ({
+      counters: (targetTeam.counters || []).map((c) => ({
         pokemon: { ...c.pokemon },
         notes: c.notes,
       })),

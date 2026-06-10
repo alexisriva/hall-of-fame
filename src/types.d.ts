@@ -61,8 +61,8 @@ type PokemonTeam = {
   name: string;
   /** Array of PokemonBuild IDs — resolve against the store's `builds` array */
   pokemon: string[];
-  leads: MatchLead[];
-  counters: MatchCounter[];
+  leads?: MatchLead[];
+  counters?: MatchCounter[];
   additionalInsights: string;
   wins: number;
   losses: number;
@@ -77,3 +77,24 @@ type MatchCounter = {
   pokemon: PokemonBuild;
   notes: string;
 };
+
+type TurnAction = {
+  actionType: "move" | "switch";
+  pokemon: string; // Active species name performing the action
+  isPlayer: boolean; // Indicates if it's the player's Pokemon or the opponent's
+  detail: string;  // Move name OR switch-in species name
+};
+
+type BattleTurn = {
+  actions: TurnAction[]; // Ordered list of actions in the turn
+};
+
+type BattleRecord = {
+  id: string;
+  teamId: string;
+  date: string;
+  opponentPokemon: string[]; // 1-4 opposing species names
+  lead: string[]; // 1-4 player party species names
+  turns: BattleTurn[];
+};
+

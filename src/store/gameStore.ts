@@ -19,6 +19,7 @@ interface GameStore {
   builds: PokemonBuild[];
   teams: PokemonTeam[];
   teamCounter: number;
+  battleRecords: BattleRecord[];
 
   // Build actions
   addBuild: (build: PokemonBuild) => void;
@@ -29,6 +30,11 @@ interface GameStore {
   addTeam: (team: Omit<PokemonTeam, "id">) => void;
   updateTeam: (teamId: string, updates: Partial<PokemonTeam>) => void;
   deleteTeam: (teamId: string) => void;
+
+  // Battle Record actions
+  addBattleRecord: (record: Omit<BattleRecord, "id">) => void;
+  updateBattleRecord: (id: string, updates: Partial<BattleRecord>) => void;
+  deleteBattleRecord: (id: string) => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -37,6 +43,7 @@ export const useGameStore = create<GameStore>()(
       builds: [],
       teams: [],
       teamCounter: 1,
+      battleRecords: [],
 
       addBuild: (build) =>
         set((state) => ({ builds: [...state.builds, build] })),
@@ -72,6 +79,26 @@ export const useGameStore = create<GameStore>()(
       deleteTeam: (teamId) =>
         set((state) => ({
           teams: state.teams.filter((t) => t.id !== teamId),
+        })),
+
+      addBattleRecord: (record) =>
+        set((state) => ({
+          battleRecords: [
+            ...state.battleRecords,
+            { ...record, id: uuidv4() },
+          ],
+        })),
+
+      updateBattleRecord: (id, updates) =>
+        set((state) => ({
+          battleRecords: state.battleRecords.map((r) =>
+            r.id === id ? { ...r, ...updates } : r,
+          ),
+        })),
+
+      deleteBattleRecord: (id) =>
+        set((state) => ({
+          battleRecords: state.battleRecords.filter((r) => r.id !== id),
         })),
     }),
     {

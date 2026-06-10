@@ -8,6 +8,8 @@ import {
   HiOutlineCpuChip,
   HiOutlineTv,
   HiOutlineTrash,
+  HiOutlineCheck,
+  HiOutlinePlus,
 } from "react-icons/hi2";
 import { useGameStore } from "../store/gameStore";
 import {
@@ -85,6 +87,383 @@ const MatchAssistantPage: FC = () => {
     string | null
   >(null);
 
+  // Battle Recorder states
+  const [customLeads, setCustomLeads] = useState<string[]>([]);
+  const [customOpponents, setCustomOpponents] = useState<string[]>([]);
+  const [turnsLog, setTurnsLog] = useState<BattleTurn[]>([]);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const addBattleRecord = useGameStore((s) => s.addBattleRecord);
+
+  // Synchronize player party with brought player Pokémon
+  useEffect(() => {
+    const broughtP = playerLineup.filter((p) => p.isBrought).map((p) => p.name);
+    if (customLeads.length === 0 && broughtP.length > 0) {
+      const pad = [...broughtP];
+      while (pad.length < 4) pad.push("");
+      setCustomLeads(pad.slice(0, 4));
+    }
+  }, [playerLineup, customLeads]);
+
+  // Synchronize opponent party with brought opponent Pokémon
+  useEffect(() => {
+    const broughtO = opponentLineup.filter((o) => o.isBrought).map((o) => o.name);
+    if (customOpponents.length === 0 && broughtO.length > 0) {
+      const pad = [...broughtO];
+      while (pad.length < 4) pad.push("");
+      setCustomOpponents(pad.slice(0, 4));
+    }
+  }, [opponentLineup, customOpponents]);
+
+  const handleCustomLeadChange = (index: number, name: string) => {
+    const nextLeads = [...customLeads];
+    while (nextLeads.length < 4) nextLeads.push("");
+    nextLeads[index] = name;
+    setCustomLeads(nextLeads);
+  };
+
+  const handleCustomOpponentChange = (index: number, name: string) => {
+    const nextOpps = [...customOpponents];
+    while (nextOpps.length < 4) nextOpps.push("");
+    nextOpps[index] = name;
+    setCustomOpponents(nextOpps);
+  };
+
+  const handleAddTurn = () => {
+    const activePlayer = playerLineup.filter((p) => p.isActive);
+    const activeOpponent = opponentLineup.filter((o) => o.isActive);
+
+    const actions: TurnAction[] = [];
+    activePlayer.forEach((p) => {
+      actions.push({
+        pokemon: p.name,
+        isPlayer: true,
+        actionType: "move",
+        detail: "",
+      });
+    });
+    activeOpponent.forEach((o) => {
+      actions.push({
+        pokemon: o.name,
+        isPlayer: false,
+        actionType: "move",
+        detail: "",
+      });
+    });
+
+    setTurnsLog([...turnsLog, { actions }]);
+  };
+
+  const handleActionPokemonChange = (
+    turnIdx: number,
+    actionIdx: number,
+    selectedValue: string
+  ) => {
+    const nextTurns = [...turnsLog];
+    const action = nextTurns[turnIdx].actions[actionIdx];
+    if (!selectedValue) {
+      action.pokemon = "";
+      action.isPlayer = true;
+      action.detail = "";
+    } else {
+      const [type, pokemonName] = selectedValue.split(":");
+      action.pokemon = pokemonName || "";
+      action.isPlayer = type === "player";
+      action.detail = "";
+    }
+    setTurnsLog(nextTurns);
+  };
+
+  const handleMoveAction = (
+    turnIdx: number,
+    actionIdx: number,
+    direction: "up" | "down"
+  ) => {
+    const nextTurns = [...turnsLog];
+    const actions = [...nextTurns[turnIdx].actions];
+    const targetIdx = direction === "up" ? actionIdx - 1 : actionIdx + 1;
+    if (targetIdx < 0 || targetIdx >= actions.length) return;
+
+    const temp = actions[actionIdx];
+    actions[actionIdx] = actions[targetIdx];
+    actions[targetIdx] = temp;
+
+    nextTurns[turnIdx].actions = actions;
+    setTurnsLog(nextTurns);
+  };
+
+  const handleUpdateTurnAction = (
+    turnIdx: number,
+    actionIdx: number,
+    updates: Partial<TurnAction>
+  ) => {
+    const nextTurns = [...turnsLog];
+    nextTurns[turnIdx].actions[actionIdx] = {
+      ...nextTurns[turnIdx].actions[actionIdx],
+      ...updates,
+    };
+    setTurnsLog(nextTurns);
+  };
+
+  const handleAddTurnAction = (turnIdx: number) => {
+    const nextTurns = [...turnsLog];
+    const playerFirst = customLeads.filter(Boolean)[0] || "";
+    nextTurns[turnIdx].actions.push({
+      pokemon: playerFirst,
+      isPlayer: true,
+      actionType: "move",
+      detail: "",
+    });
+    setTurnsLog(nextTurns);
+  };
+
+  const getPlayerMoves = (pokemonName: string): string[] => {
+    const build = builds.find(
+      (b) =>
+        b.species &&
+        (b.species.form || b.species.name || b.name).toLowerCase() ===
+          pokemonName.toLowerCase()
+    );
+    return build ? (build.moves.filter(Boolean) as string[]) : [];
+  };
+
+  const handleSaveBattleRecord = () => {
+    if (!selectedTeamId) return;
+    if (opponentLineup.length === 0) return;
+
+    addBattleRecord({
+      teamId: selectedTeamId,
+      date: new Date().toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+      opponentPokemon: customOpponents.filter(Boolean),
+      lead: customLeads.filter(Boolean),
+      turns: turnsLog,
+    });
+
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3000);
+
+    // Reset states
+    setOpponentLineup([]);
+    setTurnsLog([]);
+    setCustomLeads([]);
+    setCustomOpponents([]);
+    setSelectedOpponentMeta(null);
+  };
+
+  const renderTurnSlotEditor = (
+    tIdx: number,
+    actionIdx: number,
+    action: TurnAction
+  ) => {
+    const isMove = action.actionType === "move";
+    const activePlayerParty = customLeads.filter(Boolean);
+    const activeOpponentParty = customOpponents.filter(Boolean);
+
+    const moves = getPlayerMoves(action.pokemon);
+    const isCustom = action.detail !== "" && !moves.includes(action.detail) && action.detail !== "__custom__";
+    const selectValue = isCustom ? "__custom__" : action.detail;
+
+    return (
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 bg-[#161C29]/40 p-2.5 rounded-lg border border-white/5">
+        {/* Sort Controls */}
+        <div className="flex items-center gap-0.5 shrink-0">
+          <button
+            type="button"
+            disabled={actionIdx === 0}
+            onClick={() => handleMoveAction(tIdx, actionIdx, "up")}
+            className="p-1 rounded text-white/20 hover:text-white/80 disabled:opacity-20 hover:bg-white/5 transition-all cursor-pointer text-xs"
+            title="Move Up"
+          >
+            ▲
+          </button>
+          <button
+            type="button"
+            disabled={actionIdx === (turnsLog[tIdx].actions.length - 1)}
+            onClick={() => handleMoveAction(tIdx, actionIdx, "down")}
+            className="p-1 rounded text-white/20 hover:text-white/80 disabled:opacity-20 hover:bg-white/5 transition-all cursor-pointer text-xs"
+            title="Move Down"
+          >
+            ▼
+          </button>
+        </div>
+
+        {/* Combined Pokemon Selector */}
+        <div className="flex items-center gap-1.5 min-w-[150px] max-w-[200px] w-full">
+          <div className="relative w-full">
+            <select
+              value={action.pokemon ? `${action.isPlayer ? "player" : "opponent"}:${action.pokemon}` : ""}
+              onChange={(e) => handleActionPokemonChange(tIdx, actionIdx, e.target.value)}
+              className="w-full rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] font-bold text-white outline-none cursor-pointer focus:ring-1 focus:ring-sky-500 appearance-none"
+            >
+              <option value="">Select Pokémon...</option>
+              <optgroup label="Your Party">
+                {activePlayerParty.map((name) => (
+                  <option key={`player:${name}`} value={`player:${name}`}>
+                    {name} [User]
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Opponent Party">
+                {activeOpponentParty.map((name) => (
+                  <option key={`opponent:${name}`} value={`opponent:${name}`}>
+                    {name} [Opp]
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+            <HiOutlineChevronDown
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
+              size={9}
+            />
+          </div>
+        </div>
+
+        {/* Action Type */}
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={() =>
+              handleUpdateTurnAction(tIdx, actionIdx, {
+                actionType: "move",
+                detail: "",
+              })
+            }
+            className={[
+              "px-2 py-0.5 rounded text-[9px] font-bold transition-all cursor-pointer border",
+              isMove
+                ? "bg-sky-500/10 border-sky-500/30 text-sky-400"
+                : "border-white/5 text-white/30 hover:bg-white/5",
+            ].join(" ")}
+          >
+            Move
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              handleUpdateTurnAction(tIdx, actionIdx, {
+                actionType: "switch",
+                detail: "",
+              })
+            }
+            className={[
+              "px-2 py-0.5 rounded text-[9px] font-bold transition-all cursor-pointer border",
+              !isMove
+                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                : "border-white/5 text-white/30 hover:bg-white/5",
+            ].join(" ")}
+          >
+            Switch
+          </button>
+        </div>
+
+        {/* Detail Input */}
+        <div className="flex-grow min-w-[100px] w-full">
+          {isMove ? (
+            action.isPlayer ? (
+              <div className="flex flex-col sm:flex-row gap-1.5 w-full">
+                <div className="relative flex-1">
+                  <select
+                    value={selectValue}
+                    onChange={(e) => {
+                      if (e.target.value === "__custom__") {
+                        handleUpdateTurnAction(tIdx, actionIdx, { detail: "" });
+                      } else {
+                        handleUpdateTurnAction(tIdx, actionIdx, { detail: e.target.value });
+                      }
+                    }}
+                    className="w-full rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] text-white outline-none cursor-pointer focus:ring-1 focus:ring-sky-500 appearance-none"
+                  >
+                    <option value="">Select Move...</option>
+                    {moves.map((move) => (
+                      <option key={move} value={move}>
+                        {move}
+                      </option>
+                    ))}
+                    <option value="__custom__">Custom Move...</option>
+                  </select>
+                  <HiOutlineChevronDown
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
+                    size={9}
+                  />
+                </div>
+                {(selectValue === "__custom__" || isCustom) && (
+                  <input
+                    type="text"
+                    placeholder="Custom move..."
+                    value={isCustom ? action.detail : ""}
+                    onChange={(e) =>
+                      handleUpdateTurnAction(tIdx, actionIdx, { detail: e.target.value })
+                    }
+                    className="w-full sm:w-24 rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] text-white outline-none focus:border-sky-500"
+                  />
+                )}
+              </div>
+            ) : (
+              <input
+                type="text"
+                placeholder="Enter move..."
+                value={action.detail}
+                onChange={(e) =>
+                  handleUpdateTurnAction(tIdx, actionIdx, { detail: e.target.value })
+                }
+                className="w-full rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] text-white placeholder:text-white/25 outline-none focus:border-sky-500"
+              />
+            )
+          ) : (
+            <div className="relative w-full">
+              <select
+                value={action.detail}
+                onChange={(e) =>
+                  handleUpdateTurnAction(tIdx, actionIdx, { detail: e.target.value })
+                }
+                className="w-full rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] text-white outline-none cursor-pointer focus:ring-1 focus:ring-sky-500 appearance-none"
+              >
+                <option value="">Switch in...</option>
+                {action.isPlayer
+                  ? playerLineup
+                      .filter((p) => p.name !== action.pokemon)
+                      .map((p) => (
+                        <option key={p.name} value={p.name}>
+                          {p.name}
+                        </option>
+                      ))
+                  : opponentLineup
+                      .filter((o) => o.name !== action.pokemon)
+                      .map((o) => (
+                        <option key={o.name} value={o.name}>
+                          {o.name}
+                        </option>
+                      ))}
+              </select>
+              <HiOutlineChevronDown
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
+                size={9}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Delete action button */}
+        <button
+          type="button"
+          onClick={() => {
+            const nextTurns = [...turnsLog];
+            nextTurns[tIdx].actions = nextTurns[tIdx].actions.filter((_, idx) => idx !== actionIdx);
+            setTurnsLog(nextTurns);
+          }}
+          className="text-white/25 hover:text-[#b22200] text-lg leading-none shrink-0 px-1 hover:bg-[#b22200]/10 rounded transition-colors"
+          title="Delete action"
+        >
+          ×
+        </button>
+      </div>
+    );
+  };
+
+
   // 1. Fetch Smogon usage & sets when active format changes
   useEffect(() => {
     let active = true;
@@ -109,6 +488,8 @@ const MatchAssistantPage: FC = () => {
   // Load from an existing team in the store
   const handleLoadTeam = (teamId: string) => {
     setSelectedTeamId(teamId);
+    setCustomLeads([]);
+    setTurnsLog([]);
     const selectedTeam = teams.find((t) => t.id === teamId);
     if (!selectedTeam) return;
 
@@ -280,6 +661,8 @@ const MatchAssistantPage: FC = () => {
     setOpponentSearch("");
     setSelectedOpponentMeta(null);
     setSelectedTeamId("");
+    setCustomLeads([]);
+    setTurnsLog([]);
   };
 
   // Aggregated speed array for the SpeedQueue component
@@ -591,6 +974,164 @@ const MatchAssistantPage: FC = () => {
               </div>
             )}
           </div>
+
+          {/* Battle Recorder Widget */}
+          {opponentLineup.length > 0 && selectedTeamId && (
+            <div
+              className="bg-[#161C29] p-5 rounded-2xl border border-white/5 animate-fade-in flex flex-col gap-4"
+              style={{ boxShadow: "0 12px 40px rgba(42, 55, 94, 0.08)" }}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-white/5">
+                <div className="flex items-center gap-2">
+                  <HiOutlineTv size={16} className="text-[#b22200]" />
+                  <h3 className="text-white font-bold text-sm">
+                    Battle Recorder
+                  </h3>
+                </div>
+                {saveSuccess && (
+                  <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-lg animate-fade-in">
+                    <HiOutlineCheck size={10} /> Saved!
+                  </span>
+                )}
+              </div>
+
+              {/* Customizable Parties */}
+              <div className="flex flex-col gap-4 bg-white/2 border border-white/5 p-4 rounded-xl">
+                {/* Your Party */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                    Your Party (Brought Pokémon - Max 4)
+                  </span>
+                  <div className="grid grid-cols-2 gap-3 mt-1">
+                    {[0, 1, 2, 3].map((idx) => (
+                      <div key={idx} className="relative">
+                        <select
+                          value={customLeads[idx] || ""}
+                          onChange={(e) => handleCustomLeadChange(idx, e.target.value)}
+                          className="w-full rounded-xl bg-[#0F1115] border border-white/10 px-3 py-2 text-xs font-bold text-white outline-none cursor-pointer focus:ring-1 focus:ring-[#b22200]/50 appearance-none"
+                        >
+                          <option value="">Select Pokémon...</option>
+                          {playerLineup.map((p) => (
+                            <option key={p.name} value={p.name}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
+                        <HiOutlineChevronDown
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none"
+                          size={12}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Opponent Party */}
+                <div className="flex flex-col gap-2 border-t border-white/5 pt-3">
+                  <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                    Opponent Party (Brought Pokémon - Max 4)
+                  </span>
+                  <div className="grid grid-cols-2 gap-3 mt-1">
+                    {[0, 1, 2, 3].map((idx) => (
+                      <div key={idx} className="relative">
+                        <select
+                          value={customOpponents[idx] || ""}
+                          onChange={(e) => handleCustomOpponentChange(idx, e.target.value)}
+                          className="w-full rounded-xl bg-[#0F1115] border border-white/10 px-3 py-2 text-xs font-bold text-white outline-none cursor-pointer focus:ring-1 focus:ring-[#b22200]/50 appearance-none"
+                        >
+                          <option value="">Select Pokémon...</option>
+                          {opponentLineup.map((o) => (
+                            <option key={o.name} value={o.name}>
+                              {o.name}
+                            </option>
+                          ))}
+                        </select>
+                        <HiOutlineChevronDown
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none"
+                          size={12}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Turn Log Editor */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                    Match turns log (optional)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleAddTurn}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-[#b22200]/30 hover:border-[#b22200]/60 bg-[#b22200]/10 text-[#b22200] hover:bg-[#b22200]/25 text-[10px] font-bold cursor-pointer transition-all"
+                  >
+                    <HiOutlinePlus size={12} />
+                    Add Turn
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1">
+                  {turnsLog.length === 0 ? (
+                    <div className="py-6 text-center text-white/15 text-[10px] font-medium border border-dashed border-white/5 rounded-xl">
+                      No turns logged yet. Click "Add Turn" to track battle actions.
+                    </div>
+                  ) : (
+                    turnsLog.map((turn, tIdx) => (
+                      <div
+                        key={tIdx}
+                        className="bg-black/20 border border-white/5 rounded-xl p-3 flex flex-col gap-2.5 relative animate-fade-in"
+                      >
+                        <div className="flex items-center justify-between border-b border-white/5 pb-1.5">
+                          <span className="text-[10px] font-bold text-white/40 tracking-wider">
+                            TURN {tIdx + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setTurnsLog(turnsLog.filter((_, idx) => idx !== tIdx))
+                            }
+                            className="text-white/20 hover:text-rose-400 p-0.5 rounded cursor-pointer transition-colors"
+                            title="Delete Turn"
+                          >
+                            <HiOutlineTrash size={12} />
+                          </button>
+                        </div>
+
+                        <div className="flex flex-col gap-2 animate-fade-in">
+                          {turn.actions.map((action, actionIdx) => (
+                            <div key={actionIdx}>
+                              {renderTurnSlotEditor(tIdx, actionIdx, action)}
+                            </div>
+                          ))}
+
+                          {turn.actions.length < 4 && (
+                            <button
+                              type="button"
+                              onClick={() => handleAddTurnAction(tIdx)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-white/10 hover:border-white/25 bg-white/2 text-white/40 hover:text-white/70 text-[9px] font-bold cursor-pointer transition-all w-fit mt-1"
+                            >
+                              <HiOutlinePlus size={10} className="mr-0.5" />
+                              Add Action
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <button
+                onClick={handleSaveBattleRecord}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#b22200] text-white font-bold text-xs hover:bg-[#c32b0a] active:bg-[#a11c00] transition-colors cursor-pointer shadow-lg shadow-[#b22200]/10"
+              >
+                Save Battle Record
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Right Column: Battle Analytics & Queue Panels (7 cols on desktop) */}
