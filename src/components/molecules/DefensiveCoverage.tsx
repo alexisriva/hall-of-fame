@@ -1,9 +1,10 @@
-import { type FC } from "react";
+import { useState, type FC } from "react";
 import {
   HiCheckCircle,
   HiExclamationTriangle,
   HiSparkles,
 } from "react-icons/hi2";
+import Modal from "./Modal";
 import TypeIcon from "../atoms/TypeIcon";
 import Tooltip from "../atoms/Tooltip";
 import { capitalize } from "../../utils/helpers";
@@ -27,6 +28,7 @@ const BREAKDOWN_LABELS = [
 ];
 
 const DefensiveCoverage: FC<DefensiveCoverageProps> = ({ members }) => {
+  const [activeDetailType, setActiveDetailType] = useState<string | null>(null);
   const membersWithTypes = members.filter((m) => m.species?.types?.length);
   const neutral = membersWithTypes.length;
 
@@ -232,9 +234,11 @@ const DefensiveCoverage: FC<DefensiveCoverageProps> = ({ members }) => {
               return (
                 <Tooltip key={type} content={tooltipContent}>
                   <div
+                    onClick={() => setActiveDetailType(activeDetailType === type ? null : type)}
                     className={[
                       "flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border transition-all duration-200 cursor-pointer w-full",
                       styles.bg,
+                      activeDetailType === type ? "ring-1 ring-white/20 opacity-100!" : "",
                     ].join(" ")}
                   >
                     {/* Left: Icon + Type Name */}
@@ -270,6 +274,89 @@ const DefensiveCoverage: FC<DefensiveCoverageProps> = ({ members }) => {
             },
           )}
         </div>
+
+        <Modal
+          isOpen={activeDetailType !== null}
+          title={activeDetailType ? `${capitalize(activeDetailType)} Defense Details` : ""}
+          onClose={() => setActiveDetailType(null)}
+        >
+          {activeDetailType && (() => {
+            const entry = typeEntries.find((e) => e.type === activeDetailType);
+            if (!entry) return null;
+            const { score: activeScore, breakdown, switchIns, status: activeStatus } = entry;
+            const activeStyles = getStatusClasses(activeStatus);
+
+            return (
+              <div className="flex flex-col gap-4">
+                {/* Header Status Row */}
+                <div className="flex justify-between items-center bg-white/2 border border-white/5 rounded-xl p-3">
+                  <span className="text-white/50 text-xs font-semibold uppercase tracking-wider">
+                    Defensive Rating
+                  </span>
+                  <span className={["text-[10px] font-bold px-2.5 py-0.5 rounded-lg border uppercase tracking-widest", activeStyles.bg, activeStyles.text].join(" ")}>
+                    {activeStyles.label} ({activeScore % 1 === 0 ? activeScore : activeScore.toFixed(2)}×)
+                  </span>
+                </div>
+
+                {/* Safe Switch-ins */}
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-white/45 text-[10px] uppercase font-bold tracking-wider">
+                    SAFE SWITCH-INS ({switchIns.length}):
+                  </span>
+                  <div className="bg-[#0F1115]/50 border border-white/5 rounded-xl p-3 flex flex-col gap-2">
+                    {switchIns.length > 0 ? (
+                      switchIns.map((s, idx) => (
+                        <div
+                          key={idx}
+                          className="flex justify-between text-xs py-1.5 border-b border-white/5 last:border-b-0 last:pb-0"
+                        >
+                          <span className="text-white font-bold capitalize">
+                            {s.pokemonName}
+                          </span>
+                          <span className="text-emerald-400 font-semibold shrink-0">
+                            {s.multiplier === 0
+                              ? "Immune (0×)"
+                              : `Resists (${s.multiplier}×)`}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-[#b22200] font-semibold text-xs py-1">
+                        ⚠️ No Pokémon resists this type!
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Damage Breakdown */}
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-white/45 text-[10px] uppercase font-bold tracking-wider">
+                    DAMAGE BREAKDOWN:
+                  </span>
+                  <div className="bg-[#0F1115]/50 border border-white/5 rounded-xl p-3 grid grid-cols-2 gap-2.5">
+                    {BREAKDOWN_LABELS.map((l) => {
+                      const count = breakdown[l.key] || 0;
+                      return (
+                        <div
+                          key={l.key}
+                          className={[
+                            "flex justify-between items-center text-xs py-1.5 px-2.5 rounded-lg border",
+                            count > 0 ? "border-white/5 bg-white/2" : "border-transparent opacity-25"
+                          ].join(" ")}
+                        >
+                          <span className="text-white/50">{l.label}</span>
+                          <span className="text-white font-bold font-mono bg-white/5 px-2 py-0.5 rounded-md">
+                            {count}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </Modal>
       </div>
 
       {/* 2. Proactive Recommendations */}

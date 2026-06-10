@@ -1,7 +1,8 @@
-import { type FC } from "react";
+import { useState, type FC } from "react";
 import { HiCheckCircle, HiExclamationTriangle } from "react-icons/hi2";
 import TypeIcon from "../atoms/TypeIcon";
 import Tooltip from "../atoms/Tooltip";
+import Modal from "./Modal";
 import { capitalize } from "../../utils/helpers";
 import { ALL_TYPES, getSuperEffectiveTargets } from "../../utils/typeChart";
 import { getMoveShowdownData } from "../../utils/pkmnDataHelper";
@@ -17,6 +18,7 @@ type CoverageSource = {
 };
 
 const OffensiveCoverage: FC<OffensiveCoverageProps> = ({ members }) => {
+  const [activeDetailType, setActiveDetailType] = useState<string | null>(null);
   const hasData = members.some((m) => m.species?.types?.length);
 
   // 1. Gather coverage information
@@ -117,11 +119,15 @@ const OffensiveCoverage: FC<OffensiveCoverageProps> = ({ members }) => {
               }
             >
               <div
+                onClick={() => setActiveDetailType(activeDetailType === type ? null : type)}
                 className={[
                   "flex items-center justify-between gap-2 px-3 py-2 rounded-xl border transition-all duration-200 cursor-pointer w-full",
                   isCovered
                     ? "bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/20"
                     : "bg-white/2 border-white/5 opacity-40 hover:opacity-75",
+                  activeDetailType === type
+                    ? "ring-1 ring-emerald-500/40 border-emerald-500/30 bg-emerald-500/10 opacity-100!"
+                    : "",
                 ].join(" ")}
               >
                 {/* Left Side: Type name and icon */}
@@ -150,6 +156,50 @@ const OffensiveCoverage: FC<OffensiveCoverageProps> = ({ members }) => {
           );
         })}
       </div>
+
+      <Modal
+        isOpen={activeDetailType !== null}
+        title={activeDetailType ? `${capitalize(activeDetailType)} Coverage Details` : ""}
+        onClose={() => setActiveDetailType(null)}
+      >
+        {activeDetailType && (() => {
+          const sources = coverageMap[activeDetailType] || [];
+          if (sources.length === 0) {
+            return (
+              <p className="text-white/35 text-xs py-1">
+                No damaging moves in your team hit {capitalize(activeDetailType)} for super effective damage.
+              </p>
+            );
+          }
+          return (
+            <div className="flex flex-col gap-3">
+              <span className="text-white/45 text-[10px] font-bold uppercase tracking-wider">
+                SUPEREFFECTIVE ATTACKS BY:
+              </span>
+              <div className="flex flex-col gap-2 bg-[#0F1115]/50 border border-white/5 rounded-xl p-3">
+                {sources.map((src, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between text-xs py-1.5 border-b border-white/5 last:border-b-0 last:pb-0"
+                  >
+                    <span className="text-white font-bold capitalize">
+                      {src.pokemonName}
+                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0 text-right">
+                      <span className="text-white/85 font-semibold">
+                        {src.moveName}
+                      </span>
+                      <span className="text-white/40 text-[10px]">
+                        ({src.moveType})
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+      </Modal>
     </div>
   );
 };
