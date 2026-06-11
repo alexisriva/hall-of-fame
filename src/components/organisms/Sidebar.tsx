@@ -80,7 +80,7 @@ const Sidebar: FC = () => {
           }}
         >
           <img src={pokeball} width={18} alt="Logo" className="shrink-0" />
-          Kanto v1.1
+          Kanto v1.5
         </p>
       </div>
 

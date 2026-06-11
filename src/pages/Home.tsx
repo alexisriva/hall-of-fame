@@ -42,7 +42,7 @@ const Home: FC = () => {
     useRandomHallOfFame(isNewUser);
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-6 md:py-10 flex flex-col gap-6 md:gap-10">
+    <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-8 md:py-10 flex flex-col gap-6 md:gap-10">
       {/* Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">

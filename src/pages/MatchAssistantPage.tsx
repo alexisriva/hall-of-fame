@@ -106,7 +106,9 @@ const MatchAssistantPage: FC = () => {
 
   // Synchronize opponent party with brought opponent Pokémon
   useEffect(() => {
-    const broughtO = opponentLineup.filter((o) => o.isBrought).map((o) => o.name);
+    const broughtO = opponentLineup
+      .filter((o) => o.isBrought)
+      .map((o) => o.name);
     if (customOpponents.length === 0 && broughtO.length > 0) {
       const pad = [...broughtO];
       while (pad.length < 4) pad.push("");
@@ -156,7 +158,7 @@ const MatchAssistantPage: FC = () => {
   const handleActionPokemonChange = (
     turnIdx: number,
     actionIdx: number,
-    selectedValue: string
+    selectedValue: string,
   ) => {
     const nextTurns = [...turnsLog];
     const action = nextTurns[turnIdx].actions[actionIdx];
@@ -176,7 +178,7 @@ const MatchAssistantPage: FC = () => {
   const handleMoveAction = (
     turnIdx: number,
     actionIdx: number,
-    direction: "up" | "down"
+    direction: "up" | "down",
   ) => {
     const nextTurns = [...turnsLog];
     const actions = [...nextTurns[turnIdx].actions];
@@ -194,7 +196,7 @@ const MatchAssistantPage: FC = () => {
   const handleUpdateTurnAction = (
     turnIdx: number,
     actionIdx: number,
-    updates: Partial<TurnAction>
+    updates: Partial<TurnAction>,
   ) => {
     const nextTurns = [...turnsLog];
     nextTurns[turnIdx].actions[actionIdx] = {
@@ -221,7 +223,7 @@ const MatchAssistantPage: FC = () => {
       (b) =>
         b.species &&
         (b.species.form || b.species.name || b.name).toLowerCase() ===
-          pokemonName.toLowerCase()
+          pokemonName.toLowerCase(),
     );
     return build ? (build.moves.filter(Boolean) as string[]) : [];
   };
@@ -256,14 +258,17 @@ const MatchAssistantPage: FC = () => {
   const renderTurnSlotEditor = (
     tIdx: number,
     actionIdx: number,
-    action: TurnAction
+    action: TurnAction,
   ) => {
     const isMove = action.actionType === "move";
     const activePlayerParty = customLeads.filter(Boolean);
     const activeOpponentParty = customOpponents.filter(Boolean);
 
     const moves = getPlayerMoves(action.pokemon);
-    const isCustom = action.detail !== "" && !moves.includes(action.detail) && action.detail !== "__custom__";
+    const isCustom =
+      action.detail !== "" &&
+      !moves.includes(action.detail) &&
+      action.detail !== "__custom__";
     const selectValue = isCustom ? "__custom__" : action.detail;
 
     return (
@@ -281,7 +286,7 @@ const MatchAssistantPage: FC = () => {
           </button>
           <button
             type="button"
-            disabled={actionIdx === (turnsLog[tIdx].actions.length - 1)}
+            disabled={actionIdx === turnsLog[tIdx].actions.length - 1}
             onClick={() => handleMoveAction(tIdx, actionIdx, "down")}
             className="p-1 rounded text-white/20 hover:text-white/80 disabled:opacity-20 hover:bg-white/5 transition-all cursor-pointer text-xs"
             title="Move Down"
@@ -294,8 +299,14 @@ const MatchAssistantPage: FC = () => {
         <div className="flex items-center gap-1.5 min-w-[150px] max-w-[200px] w-full">
           <div className="relative w-full">
             <select
-              value={action.pokemon ? `${action.isPlayer ? "player" : "opponent"}:${action.pokemon}` : ""}
-              onChange={(e) => handleActionPokemonChange(tIdx, actionIdx, e.target.value)}
+              value={
+                action.pokemon
+                  ? `${action.isPlayer ? "player" : "opponent"}:${action.pokemon}`
+                  : ""
+              }
+              onChange={(e) =>
+                handleActionPokemonChange(tIdx, actionIdx, e.target.value)
+              }
               className="w-full rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] font-bold text-white outline-none cursor-pointer focus:ring-1 focus:ring-sky-500 appearance-none"
             >
               <option value="">Select Pokémon...</option>
@@ -360,7 +371,7 @@ const MatchAssistantPage: FC = () => {
         </div>
 
         {/* Detail Input */}
-        <div className="flex-grow min-w-[100px] w-full">
+        <div className="grow min-w-[100px] w-full">
           {isMove ? (
             action.isPlayer ? (
               <div className="flex flex-col sm:flex-row gap-1.5 w-full">
@@ -371,7 +382,9 @@ const MatchAssistantPage: FC = () => {
                       if (e.target.value === "__custom__") {
                         handleUpdateTurnAction(tIdx, actionIdx, { detail: "" });
                       } else {
-                        handleUpdateTurnAction(tIdx, actionIdx, { detail: e.target.value });
+                        handleUpdateTurnAction(tIdx, actionIdx, {
+                          detail: e.target.value,
+                        });
                       }
                     }}
                     className="w-full rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] text-white outline-none cursor-pointer focus:ring-1 focus:ring-sky-500 appearance-none"
@@ -395,7 +408,9 @@ const MatchAssistantPage: FC = () => {
                     placeholder="Custom move..."
                     value={isCustom ? action.detail : ""}
                     onChange={(e) =>
-                      handleUpdateTurnAction(tIdx, actionIdx, { detail: e.target.value })
+                      handleUpdateTurnAction(tIdx, actionIdx, {
+                        detail: e.target.value,
+                      })
                     }
                     className="w-full sm:w-24 rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] text-white outline-none focus:border-sky-500"
                   />
@@ -407,7 +422,9 @@ const MatchAssistantPage: FC = () => {
                 placeholder="Enter move..."
                 value={action.detail}
                 onChange={(e) =>
-                  handleUpdateTurnAction(tIdx, actionIdx, { detail: e.target.value })
+                  handleUpdateTurnAction(tIdx, actionIdx, {
+                    detail: e.target.value,
+                  })
                 }
                 className="w-full rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] text-white placeholder:text-white/25 outline-none focus:border-sky-500"
               />
@@ -417,7 +434,9 @@ const MatchAssistantPage: FC = () => {
               <select
                 value={action.detail}
                 onChange={(e) =>
-                  handleUpdateTurnAction(tIdx, actionIdx, { detail: e.target.value })
+                  handleUpdateTurnAction(tIdx, actionIdx, {
+                    detail: e.target.value,
+                  })
                 }
                 className="w-full rounded-md bg-[#0F1115] border border-white/10 px-2 py-1 text-[10px] text-white outline-none cursor-pointer focus:ring-1 focus:ring-sky-500 appearance-none"
               >
@@ -451,7 +470,9 @@ const MatchAssistantPage: FC = () => {
           type="button"
           onClick={() => {
             const nextTurns = [...turnsLog];
-            nextTurns[tIdx].actions = nextTurns[tIdx].actions.filter((_, idx) => idx !== actionIdx);
+            nextTurns[tIdx].actions = nextTurns[tIdx].actions.filter(
+              (_, idx) => idx !== actionIdx,
+            );
             setTurnsLog(nextTurns);
           }}
           className="text-white/25 hover:text-[#b22200] text-lg leading-none shrink-0 px-1 hover:bg-[#b22200]/10 rounded transition-colors"
@@ -462,7 +483,6 @@ const MatchAssistantPage: FC = () => {
       </div>
     );
   };
-
 
   // 1. Fetch Smogon usage & sets when active format changes
   useEffect(() => {
@@ -519,7 +539,9 @@ const MatchAssistantPage: FC = () => {
           spriteUrl:
             sdData?.spriteUrl ||
             build.species.sprite ||
-            getShowdownSpriteUrl((build.species.form || build.species.name).toLowerCase()),
+            getShowdownSpriteUrl(
+              (build.species.form || build.species.name).toLowerCase(),
+            ),
           isPlayer: true,
           isBrought: true,
           isActive: idx < 2, // Default first two active
@@ -552,7 +574,8 @@ const MatchAssistantPage: FC = () => {
     const matchingBuild = builds.find(
       (b) =>
         b.species &&
-        (b.species.form || b.species.name).toLowerCase() === species.name.toLowerCase(),
+        (b.species.form || b.species.name).toLowerCase() ===
+          species.name.toLowerCase(),
     );
 
     const newMember: LineupMember = {
@@ -583,13 +606,14 @@ const MatchAssistantPage: FC = () => {
       return;
     }
     const results = searchPokemonShowdown(opponentSearch);
-    
+
     // Enhance autocomplete results with custom sprites from player's builds if available
     const enhancedResults = results.map((res) => {
       const matchingBuild = builds.find(
         (b) =>
           b.species &&
-          (b.species.form || b.species.name).toLowerCase() === res.name.toLowerCase(),
+          (b.species.form || b.species.name).toLowerCase() ===
+            res.name.toLowerCase(),
       );
       if (matchingBuild?.species?.sprite) {
         return {
@@ -687,13 +711,12 @@ const MatchAssistantPage: FC = () => {
     VGC_FORMATS.find((f) => f.id === activeFormat)?.label || activeFormat;
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-6 md:py-10 flex flex-col gap-6 md:gap-10">
+    <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-8 md:py-10 flex flex-col gap-6 md:gap-10">
       {/* Dynamic Header */}
       <header className="flex items-start justify-between gap-6 flex-wrap pb-4 border-b border-white/5">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <HiOutlineTv size={26} className="text-[#b22200]" />
-            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl md:text-4xl font-bold text-white tracking-tight leading-none">
               Live Match Assistant
             </h1>
           </div>
@@ -883,7 +906,9 @@ const MatchAssistantPage: FC = () => {
                             src={res.spriteUrl}
                             alt={res.name}
                             className="w-8 h-8 object-contain pointer-events-none"
-                            onError={(e) => handlePokemonSpriteError(e, res.name)}
+                            onError={(e) =>
+                              handlePokemonSpriteError(e, res.name)
+                            }
                           />
                           <span className="text-white font-bold capitalize truncate">
                             {res.name}
@@ -1007,7 +1032,9 @@ const MatchAssistantPage: FC = () => {
                       <div key={idx} className="relative">
                         <select
                           value={customLeads[idx] || ""}
-                          onChange={(e) => handleCustomLeadChange(idx, e.target.value)}
+                          onChange={(e) =>
+                            handleCustomLeadChange(idx, e.target.value)
+                          }
                           className="w-full rounded-xl bg-[#0F1115] border border-white/10 px-3 py-2 text-xs font-bold text-white outline-none cursor-pointer focus:ring-1 focus:ring-[#b22200]/50 appearance-none"
                         >
                           <option value="">Select Pokémon...</option>
@@ -1036,7 +1063,9 @@ const MatchAssistantPage: FC = () => {
                       <div key={idx} className="relative">
                         <select
                           value={customOpponents[idx] || ""}
-                          onChange={(e) => handleCustomOpponentChange(idx, e.target.value)}
+                          onChange={(e) =>
+                            handleCustomOpponentChange(idx, e.target.value)
+                          }
                           className="w-full rounded-xl bg-[#0F1115] border border-white/10 px-3 py-2 text-xs font-bold text-white outline-none cursor-pointer focus:ring-1 focus:ring-[#b22200]/50 appearance-none"
                         >
                           <option value="">Select Pokémon...</option>
@@ -1075,7 +1104,8 @@ const MatchAssistantPage: FC = () => {
                 <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1">
                   {turnsLog.length === 0 ? (
                     <div className="py-6 text-center text-white/15 text-[10px] font-medium border border-dashed border-white/5 rounded-xl">
-                      No turns logged yet. Click "Add Turn" to track battle actions.
+                      No turns logged yet. Click "Add Turn" to track battle
+                      actions.
                     </div>
                   ) : (
                     turnsLog.map((turn, tIdx) => (
@@ -1090,7 +1120,9 @@ const MatchAssistantPage: FC = () => {
                           <button
                             type="button"
                             onClick={() =>
-                              setTurnsLog(turnsLog.filter((_, idx) => idx !== tIdx))
+                              setTurnsLog(
+                                turnsLog.filter((_, idx) => idx !== tIdx),
+                              )
                             }
                             className="text-white/20 hover:text-rose-400 p-0.5 rounded cursor-pointer transition-colors"
                             title="Delete Turn"
@@ -1238,7 +1270,9 @@ const MatchAssistantPage: FC = () => {
                                   src={opp.spriteUrl}
                                   alt={opp.name}
                                   className="w-6 h-6 object-contain pointer-events-none"
-                                  onError={(e) => handlePokemonSpriteError(e, opp.name)}
+                                  onError={(e) =>
+                                    handlePokemonSpriteError(e, opp.name)
+                                  }
                                 />
                                 <span className="capitalize">{opp.name}</span>
                               </button>
