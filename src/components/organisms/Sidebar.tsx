@@ -11,6 +11,7 @@ import { SlTrophy } from "react-icons/sl";
 import CoffeeButton from "../atoms/CoffeeButton";
 import Tile from "../molecules/Tile";
 import pokeball from "../../assets/pokeball.png";
+import pkg from "../../../package.json";
 
 const NAV_ITEMS = [
   {
@@ -80,7 +81,7 @@ const Sidebar: FC = () => {
           }}
         >
           <img src={pokeball} width={18} alt="Logo" className="shrink-0" />
-          Kanto v1.5
+          Kanto v{pkg.version}
         </p>
       </div>
 
