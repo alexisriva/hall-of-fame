@@ -35,7 +35,7 @@ const NOT_VERY_EFFECTIVE: Record<string, string[]> = {
   water:    ["water", "grass", "dragon"],
   electric: ["electric", "grass", "dragon"],
   grass:    ["fire", "grass", "poison", "flying", "bug", "dragon", "steel"],
-  ice:      ["water", "ice"],
+  ice:      ["water", "ice", "steel", "fire"],
   fighting: ["poison", "flying", "psychic", "bug", "fairy"],
   poison:   ["poison", "ground", "rock", "ghost"],
   ground:   ["grass", "bug"],
@@ -58,7 +58,7 @@ const NO_EFFECT: Record<string, string[]> = {
   poison:   ["steel"],
   ground:   ["flying"],
   psychic:  ["dark"],
-  ghost:    ["normal", "fighting"],
+  ghost:    ["normal"],
   dragon:   ["fairy"],
 };
 
