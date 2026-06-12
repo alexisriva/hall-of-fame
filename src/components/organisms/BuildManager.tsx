@@ -164,6 +164,8 @@ const BuildManager: FC<BuildManagerProps> = ({
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
+  const usedSps = STATS.reduce((acc, stat) => acc + localBuild.sps[stat], 0);
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header: sprite + name + shiny */}
@@ -377,7 +379,7 @@ const BuildManager: FC<BuildManagerProps> = ({
           {/* Stats */}
           <div className="flex flex-col gap-2">
             <span className="text-white/50 text-xs font-medium uppercase tracking-widest">
-              Stats — SPs (Max 32 / Total 66)
+              Stats — SPs ({usedSps} / 66 total)
             </span>
             <div className="rounded-xl bg-[#161C29] px-5 py-4 flex flex-col gap-3">
               {STATS.map((stat) => (
